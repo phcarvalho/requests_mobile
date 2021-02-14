@@ -5,29 +5,45 @@ import { FlatList } from "react-native";
 
 import Container from "../../../components/Container";
 import Header from "../../../components/Header";
+import { formatPrice } from "../../../utils/price";
 
 // import { Container } from './styles';
 
 const products = [
   {
-    name: "Product 1",
-    subtitle: "R$ 15,50",
+    id: "FAR-09AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
   },
   {
-    name: "Product 2",
-    subtitle: "R$ 15,50",
+    id: "FAR-10AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
   },
   {
-    name: "Product 3",
-    subtitle: "R$ 15,50",
+    id: "FAR-11AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
   },
   {
-    name: "Product 4",
-    subtitle: "R$ 15,50",
+    id: "FAR-12AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
   },
   {
-    name: "Product 5",
-    subtitle: "R$ 15,50",
+    id: "FAR-13AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
+  },
+  {
+    id: "FAR-14AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
+  },
+  {
+    id: "FAR-15AM",
+    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
+    unit: "UN",
   },
 ];
 
@@ -44,7 +60,7 @@ const ProductList: React.FC = () => {
         }}
       />
       <FlatList
-        keyExtractor={(item, index) => item.name}
+        keyExtractor={(item, index) => item.id}
         data={products}
         renderItem={({ item, index }) => (
           <ListItem
@@ -54,8 +70,10 @@ const ProductList: React.FC = () => {
           >
             <Avatar source={require("../../../../assets/flat-icons/box.png")} />
             <ListItem.Content>
-              <ListItem.Title>{item.name}</ListItem.Title>
-              <ListItem.Subtitle>{item.subtitle}</ListItem.Subtitle>
+              <ListItem.Title numberOfLines={1}>{item.name}</ListItem.Title>
+              <ListItem.Subtitle>
+                {item.id} - Unidade: {item.unit}
+              </ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>

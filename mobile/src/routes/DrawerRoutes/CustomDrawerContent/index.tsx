@@ -1,28 +1,36 @@
 import React from "react";
-import { Image, Text } from "react-native";
+import { Avatar, Text } from "react-native-elements";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
 
-import { LogoContainer } from "./styles";
+import { DrawerContainer, LogoContainer } from "./styles";
+import SyncBar from "../SyncBar";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { navigation } = props;
 
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContainer style={{ flex: 1 }}>
       <LogoContainer onPress={() => navigation.navigate("Home")}>
-        <Text>Home</Text>
+        <Avatar
+          source={require("../../../../assets/icon.png")}
+          rounded
+          size={80}
+        />
       </LogoContainer>
-      <DrawerItemList
-        {...props}
-        activeTintColor="#666"
-        inactiveTintColor="#666"
-        activeBackgroundColor="#eee"
-      />
-    </DrawerContentScrollView>
+      <DrawerContentScrollView contentContainerStyle={{ flex: 1 }} {...props}>
+        <DrawerItemList
+          {...props}
+          activeTintColor="#666"
+          inactiveTintColor="#666"
+          activeBackgroundColor="#eee"
+        />
+      </DrawerContentScrollView>
+      <SyncBar />
+    </DrawerContainer>
   );
 };
 

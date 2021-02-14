@@ -8,6 +8,9 @@ import CustomDrawerContent from "./CustomDrawerContent";
 import Home from "../../pages/Home";
 import Products from "../../pages/Products";
 import Contacts from "../../pages/Contacts";
+import Clients from "../../pages/Client";
+import { useSelector } from "react-redux";
+import { RootState } from "../../stores/modules/rootReducer";
 
 const Drawer = createDrawerNavigator();
 
@@ -26,16 +29,16 @@ const routeOptions: RouteAttributes[] = [
     component: Home,
   },
   {
+    name: "Clients",
+    title: "Clientes",
+    materialIconName: "person",
+    component: Clients,
+  },
+  {
     name: "Products",
     title: "Produtos",
     materialIconName: "widgets",
     component: Products,
-  },
-  {
-    name: "Contacts",
-    title: "Contatos",
-    materialIconName: "person",
-    component: Contacts,
   },
 ];
 
