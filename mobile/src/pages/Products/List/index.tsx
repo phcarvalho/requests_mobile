@@ -3,9 +3,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Avatar, ListItem } from "react-native-elements";
 import { FlatList } from "react-native";
 
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Common";
 import Header from "../../../components/Header";
-import { formatPrice } from "../../../utils/price";
 
 // import { Container } from './styles';
 
@@ -54,10 +53,10 @@ const ProductList: React.FC = () => {
     <Container>
       <Header
         title="Produtos"
-        rightComponent={{
-          icon: "add",
-          onPress: () => navigation.navigate("ProductForm"),
-        }}
+        // rightComponent={{
+        //   icon: "add",
+        //   onPress: () => navigation.navigate("ProductForm"),
+        // }}
       />
       <FlatList
         keyExtractor={(item, index) => item.id}

@@ -1,14 +1,14 @@
-import axios from 'axios';
+import axios from "axios";
 
-import apiConfigs from '../configs/api';
+import apiConfigs from "../configs/api";
 
-const { baseURL, token } = apiConfigs
+const { baseURL, token } = apiConfigs;
 
 const api = axios.create({
   baseURL,
   headers: {
-    'Authorization': `Bearer ${token}`;
-  }
-})
+    Authorization: `Bearer ${token}`,
+  },
+});
 
 export default api;

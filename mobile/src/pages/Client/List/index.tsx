@@ -1,75 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar, ListItem } from "react-native-elements";
+import { useDispatch, useSelector } from "react-redux";
 import { FlatList } from "react-native";
 
-import Container from "../../../components/Container";
+import { RootState } from "../../../stores/modules/rootReducer";
+import { fetchClients, setCurrentClient } from "../../../stores/modules/client";
+
+import { Container } from "../../../components/Common";
 import Header from "../../../components/Header";
-import { formatPrice } from "../../../utils/price";
+
+import { formatNumberByMask } from "../../../utils/text";
+import { ClientAPIResponse } from "../../../types/client";
 
 // import { Container } from './styles';
 
-const clients = [
-  {
-    id: 80399,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-  {
-    id: 80400,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-  {
-    id: 80401,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-  {
-    id: 80402,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-  {
-    id: 80403,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-  {
-    id: 80404,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-  {
-    id: 80405,
-    name: "007 MOTOS PECAS E SERVICOS LTDA",
-    docId: 13715241000169,
-    region: "REGIAO M SÃO PAULO",
-    phone: "(13) 3223-2103",
-    email: "motos007.p.s@hotmail.com",
-  },
-];
-
 const ClientList: React.FC = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const { clients, loading } = useSelector((state: RootState) => state.client);
+
+  useEffect(() => {
+    dispatch(fetchClients());
+  }, []);
+
+  const handleClick = (client: ClientAPIResponse) => {
+    dispatch(setCurrentClient(client));
+
+    navigation.navigate("ClientDetail");
+  };
 
   return (
     <Container>
@@ -81,22 +41,31 @@ const ClientList: React.FC = () => {
         }}
       />
       <FlatList
-        keyExtractor={(item, index) => `${item.id}`}
+        keyExtractor={(item) => item.CodigoDoCliente}
         data={clients}
+        onRefresh={() => dispatch(fetchClients())}
+        refreshing={loading}
         renderItem={({ item, index }) => (
-          <ListItem
-            key={index}
-            bottomDivider
-            onPress={() => console.log(item.name)}
-          >
+          <ListItem key={index} bottomDivider onPress={() => handleClick(item)}>
             <Avatar
               source={require("../../../../assets/flat-icons/contact-book.png")}
             />
             <ListItem.Content>
-              <ListItem.Title numberOfLines={1}>{item.name}</ListItem.Title>
-              <ListItem.Subtitle>{item.docId}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.email}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.phone}</ListItem.Subtitle>
+              <ListItem.Title numberOfLines={1}>
+                {item.RazaoSocial}
+              </ListItem.Title>
+              <ListItem.Subtitle>
+                {
+                  formatNumberByMask(
+                    item.CnpjCpf,
+                    item.CnpjCpf.length > 11
+                      ? "##.###.###/####-##"
+                      : "###.###.###-##"
+                  ).formattedValue
+                }
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>{item.Email}</ListItem.Subtitle>
+              <ListItem.Subtitle>{item.Telefone}</ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>

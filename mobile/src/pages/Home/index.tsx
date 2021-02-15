@@ -1,7 +1,7 @@
 import React from "react";
-import { View } from "react-native";
-import Container from "../../components/Container";
+
 import Header from "../../components/Header";
+import { Container } from "../../components/Common";
 
 // import { Container } from './styles';
 
@@ -10,10 +10,10 @@ const Home: React.FC = () => {
     <Container>
       <Header
         title="Início"
-        rightComponent={{
-          icon: "sync",
-          onPress: () => console.log("sync"),
-        }}
+        // rightComponent={{
+        //   icon: "sync",
+        //   onPress: () => console.log("sync"),
+        // }}
       />
     </Container>
   );

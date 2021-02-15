@@ -45,7 +45,12 @@ const routeOptions: RouteAttributes[] = [
 const DrawerRoutes = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator drawerContent={CustomDrawerContent}>
+      <Drawer.Navigator
+        drawerContent={CustomDrawerContent}
+        screenOptions={{
+          unmountOnBlur: true,
+        }}
+      >
         {routeOptions.map((route) => (
           <Drawer.Screen
             key={route.name}

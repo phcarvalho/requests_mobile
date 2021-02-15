@@ -21,7 +21,6 @@ const Header: React.FC<HeaderProps> = ({ title, rightComponent }) => {
     <HeaderRNE
       leftComponent={{
         icon: "menu",
-        // color: "#666",
         onPress: () => navigation.dispatch(DrawerActions.openDrawer()),
       }}
       centerComponent={{ text: title }}

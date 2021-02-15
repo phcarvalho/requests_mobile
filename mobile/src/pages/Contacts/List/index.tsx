@@ -4,7 +4,7 @@ import { Avatar, ListItem } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
 import Header from "../../../components/Header";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Common";
 
 const contacts = [
   {

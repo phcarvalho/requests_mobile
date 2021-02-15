@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigation } from "@react-navigation/native";
+import { Button, Input } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import Header from "../../../components/Header";
-import Container from "../../../components/Container";
-
-import { Button, Input } from "react-native-elements";
-
-import Form from "../../../components/Form";
+import { Form, Container } from "../../../components/Common";
 import MaskedInput from "../../../components/MaskedInput";
+import Header from "../../../components/Header";
 
 interface ClientValues {
   name: string;
@@ -44,8 +41,8 @@ const clientSchema = yup.object().shape({
 const ClientForm: React.FC = () => {
   const navigation = useNavigation();
 
-  const handleSubmit = async (values: ClientValues) => {
-    console.log(values);
+  const handleFormSubmit = async (values: ClientValues) => {
+    const {} = values;
   };
 
   return (
@@ -61,7 +58,7 @@ const ClientForm: React.FC = () => {
       <Form>
         <Formik
           initialValues={clientInitialValues}
-          onSubmit={(values) => handleSubmit(values)}
+          onSubmit={(values) => handleFormSubmit(values)}
           validationSchema={clientSchema}
         >
           {({ handleChange, handleSubmit, values, touched, errors }) => (
@@ -74,11 +71,11 @@ const ClientForm: React.FC = () => {
                 errorMessage={touched.name && errors.name ? errors.name : ""}
               />
               <MaskedInput
-                label="Telefone Pessoal"
-                placeholder="(xx) xxxxx-xxxx"
+                label="Telefone"
+                placeholder="(xx) xxxx-xxxx"
                 value={values.phonePersonal}
                 onChangeText={handleChange("phonePersonal")}
-                mask="(##) #####-####"
+                mask="(##) ####-####"
                 errorMessage={
                   touched.phonePersonal && errors.phonePersonal
                     ? errors.phonePersonal
@@ -86,7 +83,7 @@ const ClientForm: React.FC = () => {
                 }
               />
               <MaskedInput
-                label="Telefone Comercial"
+                label="Celular"
                 placeholder="(xx) xxxxx-xxxx"
                 value={values.phoneCommercial}
                 onChangeText={handleChange("phoneCommercial")}

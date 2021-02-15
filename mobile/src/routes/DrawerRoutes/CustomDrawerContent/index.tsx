@@ -7,7 +7,7 @@ import {
 } from "@react-navigation/drawer";
 
 import { DrawerContainer, LogoContainer } from "./styles";
-import SyncBar from "../SyncBar";
+import SyncBar from "../../../components/SyncBar";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { navigation } = props;

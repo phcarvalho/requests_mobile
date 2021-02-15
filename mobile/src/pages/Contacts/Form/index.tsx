@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { Button, Input } from "react-native-elements";
 
 import Header from "../../../components/Header";
-import Container from "../../../components/Container";
-
-import { Button, Input } from "react-native-elements";
-import Form from "../../../components/Form";
-import { View } from "react-native";
+import { Form, Container } from "../../../components/Common";
 
 const ContactForm: React.FC = () => {
   const [name, setName] = useState("");

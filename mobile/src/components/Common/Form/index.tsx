@@ -3,7 +3,7 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 import { FormContainer, InnerContainer } from "./styles";
 
-const Form: React.FC = ({ children }) => {
+export const Form: React.FC = ({ children }) => {
   return (
     <FormContainer>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -12,5 +12,3 @@ const Form: React.FC = ({ children }) => {
     </FormContainer>
   );
 };
-
-export default Form;
