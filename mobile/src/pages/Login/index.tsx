@@ -1,15 +1,16 @@
 import React, { createRef } from "react";
-import { Keyboard, StatusBar } from "react-native";
-import { Formik } from "formik";
+import { Keyboard, StatusBar, Image } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Input } from "react-native-elements";
+import { Formik } from "formik";
 import * as yup from "yup";
+
+import { RootState } from "../../stores/modules/rootReducer";
+import { login } from "../../stores/modules/auth";
 
 import { Container, Form } from "../../components/Common";
 
 import { ErrorText, LoginContainer, LogoContainer } from "./styles";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../stores/modules/rootReducer";
-import { login } from "../../stores/modules/auth";
 
 interface LoginValues {
   userName: string;
@@ -46,10 +47,13 @@ const Login: React.FC = () => {
       <StatusBar backgroundColor="#333" barStyle="light-content" />
       <LoginContainer>
         <LogoContainer>
-          <Avatar
-            size={100}
-            rounded
-            source={require("../../../assets/icon.png")}
+          <Image
+            source={require("../../../assets/logo_transparent.png")}
+            style={{
+              width: "90%",
+              height: 0,
+              flex: 1,
+            }}
           />
         </LogoContainer>
         <Form>

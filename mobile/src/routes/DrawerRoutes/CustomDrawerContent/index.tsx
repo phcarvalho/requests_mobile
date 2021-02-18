@@ -1,13 +1,14 @@
 import React from "react";
-import { Avatar, Text } from "react-native-elements";
+import { Image } from "react-native";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
 
-import { DrawerContainer, LogoContainer } from "./styles";
 import SyncBar from "../../../components/SyncBar";
+
+import { DrawerContainer, LogoContainer } from "./styles";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { navigation } = props;
@@ -15,10 +16,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   return (
     <DrawerContainer style={{ flex: 1 }}>
       <LogoContainer onPress={() => navigation.navigate("Home")}>
-        <Avatar
-          source={require("../../../../assets/icon.png")}
-          rounded
-          size={80}
+        <Image
+          source={require("../../../../assets/logo_transparent.png")}
+          style={{
+            width: "100%",
+            height: 0,
+            flex: 1,
+          }}
         />
       </LogoContainer>
       <DrawerContentScrollView contentContainerStyle={{ flex: 1 }} {...props}>

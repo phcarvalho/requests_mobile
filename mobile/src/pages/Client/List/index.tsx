@@ -32,14 +32,15 @@ const ClientList: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Header
-        title="Clientes"
-        rightComponent={{
+    <Container
+      header={{
+        title: "Clientes",
+        rightComponent: {
           icon: "add",
           onPress: () => navigation.navigate("ClientForm"),
-        }}
-      />
+        },
+      }}
+    >
       <FlatList
         keyExtractor={(item) => item.CodigoDoCliente}
         data={clients}
