@@ -3,7 +3,7 @@ import React from "react";
 import { Header as HeaderRNE } from "react-native-elements";
 // import { Container } from './styles';
 
-interface HeaderProps {
+export interface HeaderProps {
   title: string;
   rightComponent?:
     | React.ReactElement

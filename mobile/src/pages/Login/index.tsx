@@ -1,7 +1,7 @@
-import React, { createRef, useRef } from "react";
+import React, { createRef } from "react";
 import { Keyboard, StatusBar } from "react-native";
 import { Formik } from "formik";
-import { Avatar, Button, Input, Text } from "react-native-elements";
+import { Avatar, Button, Input } from "react-native-elements";
 import * as yup from "yup";
 
 import { Container, Form } from "../../components/Common";
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container centerContent dark>
+    <Container dark verticalCenter>
       <StatusBar backgroundColor="#333" barStyle="light-content" />
       <LoginContainer>
         <LogoContainer>
