@@ -19,7 +19,7 @@ export const ContentContainer = styled.View<ContentContainerProps>`
   padding: 12px;
   border-radius: 8px;
 
-  flex-grow: ${({ fill }) => (fill ? 1 : 0)};
+  ${({ fill }) => (fill ? "flex: 1" : "")};
 
   background: #fff;
 

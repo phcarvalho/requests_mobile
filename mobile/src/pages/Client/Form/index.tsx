@@ -6,7 +6,6 @@ import * as yup from "yup";
 
 import { Form, Container } from "../../../components/Common";
 import MaskedInput from "../../../components/MaskedInput";
-import Header from "../../../components/Header";
 
 interface ClientValues {
   name: string;
@@ -43,18 +42,20 @@ const ClientForm: React.FC = () => {
 
   const handleFormSubmit = async (values: ClientValues) => {
     const {} = values;
+
+    console.log(values);
   };
 
   return (
-    <Container>
-      <Header
-        title="Novo Cliente"
-        rightComponent={{
+    <Container
+      header={{
+        title: "Novo Cliente",
+        rightComponent: {
           icon: "close",
           onPress: () => navigation.goBack(),
-        }}
-      />
-
+        },
+      }}
+    >
       <Form>
         <Formik
           initialValues={clientInitialValues}

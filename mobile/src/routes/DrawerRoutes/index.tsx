@@ -9,6 +9,7 @@ import Home from "../../pages/Home";
 import Products from "../../pages/Products";
 import Clients from "../../pages/Client";
 import Orders from "../../pages/Orders";
+import Tasks from "../../pages/Tasks";
 
 const Drawer = createDrawerNavigator();
 
@@ -25,6 +26,12 @@ const routeOptions: RouteAttributes[] = [
     title: "Início",
     materialIconName: "home",
     component: Home,
+  },
+  {
+    name: "Tasks",
+    title: "Atividades",
+    materialIconName: "list-alt",
+    component: Tasks,
   },
   {
     name: "Clients",

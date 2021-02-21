@@ -102,6 +102,18 @@ const TaskForm: React.FC = () => {
             errors,
           }) => (
             <>
+              <DateTimePicker
+                title="Data da Visita"
+                value={values.date}
+                onDateChange={(date) => setFieldValue("date", date)}
+              />
+              <Picker
+                title="Tipo de Visita"
+                items={typeItems}
+                selectedValue={values.type}
+                onValueChange={(itemValue) => setFieldValue("type", itemValue)}
+                errorMessage={touched.type && errors.type ? errors.type : ""}
+              />
               <Input
                 label="Descrição da Visita"
                 placeholder="Descrição"
@@ -111,6 +123,17 @@ const TaskForm: React.FC = () => {
                   touched.description && errors.description
                     ? errors.description
                     : ""
+                }
+              />
+              <Picker
+                title="Atividade do Cliente"
+                items={activityItems}
+                selectedValue={values.activity}
+                onValueChange={(itemValue) =>
+                  setFieldValue("activity", itemValue)
+                }
+                errorMessage={
+                  touched.activity && errors.activity ? errors.activity : ""
                 }
               />
               <Button title="Criar" onPress={() => handleSubmit()} />
