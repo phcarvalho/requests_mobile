@@ -29,6 +29,14 @@ const theme: Theme = {
       margin: 10,
     },
   },
+  SearchBar: {
+    containerStyle: {
+      backgroundColor: "#333",
+      borderBottomWidth: 0,
+      paddingHorizontal: 5,
+      paddingVertical: 2,
+    },
+  },
 };
 
 export default theme;

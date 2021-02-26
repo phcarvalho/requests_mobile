@@ -1,4 +1,5 @@
 import { KeyboardAvoidingView, Platform } from "react-native";
+import { Text } from "react-native-elements";
 import styled from "styled-components/native";
 
 export const FormContainer = styled(KeyboardAvoidingView).attrs({
@@ -13,4 +14,13 @@ export const InnerContainer = styled.ScrollView.attrs({})`
 
   border-radius: 8px;
   background-color: #fff;
+`;
+
+export const TitleText = styled(Text)`
+  margin-left: 10px;
+  font-size: 20px;
+  color: #cdcdcd;
+  font-weight: bold;
+
+  margin-bottom: 5px;
 `;

@@ -8,12 +8,36 @@ import { RootState } from "../../../stores/modules/rootReducer";
 import { fetchClients, setCurrentClient } from "../../../stores/modules/client";
 
 import { Container } from "../../../components/Common";
-import Header from "../../../components/Header";
 
 import { formatNumberByMask } from "../../../utils/text";
-import { ClientAPIResponse } from "../../../types/client";
+import { ClientAPIResponse } from "../../../types/clients";
 
 // import { Container } from './styles';
+
+const clientList: ClientAPIResponse[] = [
+  {
+    CodigoDoCliente: "80399",
+    TipoDeCliente: "Jurídica",
+    RazaoSocial: "007 MOTOS PECAS E SERVICOS LTDA",
+    NomeFantasia: "007 MOTOS",
+    CnpjCpf: "13715241000169",
+    IeRG: "633105020113",
+    DataDeAbertura: "24/07/2019 03:00:00",
+    ListaDePreco: "TABELA 001 - 001",
+    Regiao: "REGIAO M SÃO PAULO",
+    Endereco: "RUA XAVIER PINHEIRO, 264",
+    Bairro: "VILA MATIAS",
+    Complemento: "BAIXOS",
+    CEP: "11015090",
+    Cidade: "SANTOS",
+    Estado: "SP",
+    Telefone: "(13) 3223-2103",
+    OutroTelefone: " ",
+    Celular: "(13) 97415-4017",
+    Email: "motos007.p.s@hotmail.com",
+    Email2: "motos007.p.s@hotmail.com",
+  },
+];
 
 const ClientList: React.FC = () => {
   const navigation = useNavigation();
@@ -22,7 +46,9 @@ const ClientList: React.FC = () => {
   const { clients, loading } = useSelector((state: RootState) => state.client);
 
   useEffect(() => {
-    dispatch(fetchClients());
+    if (!clients) {
+      dispatch(fetchClients());
+    }
   }, []);
 
   const handleClick = (client: ClientAPIResponse) => {
@@ -43,13 +69,14 @@ const ClientList: React.FC = () => {
     >
       <FlatList
         keyExtractor={(item) => item.CodigoDoCliente}
-        data={clients}
+        // data={clients}
+        data={clientList}
         onRefresh={() => dispatch(fetchClients())}
         refreshing={loading}
         renderItem={({ item, index }) => (
           <ListItem key={index} bottomDivider onPress={() => handleClick(item)}>
             <Avatar
-              source={require("../../../../assets/flat-icons/contact-book.png")}
+              source={require("../../../../assets/flat-icons/contact-book2.png")}
             />
             <ListItem.Content>
               <ListItem.Title numberOfLines={1}>

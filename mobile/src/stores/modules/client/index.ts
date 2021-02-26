@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk } from "../..";
 
-import { ClientAPIResponse } from "../../../types/client";
+import { ClientAPIResponse } from "../../../types/clients";
 
-import api from "../../../services/api";
+import { getClients } from "../../../services/client";
 
 interface ClientState {
   currentClient: ClientAPIResponse | null;
@@ -67,13 +67,16 @@ const fetchClients = (): AppThunk => async (dispatch) => {
   dispatch(getClientsStart());
 
   try {
-    const { data } = await api.get<ClientAPIResponse[]>("/api/cliente", {
-      params: { cnpnjcpf: "13715241000169" },
-    });
+    const clients = await getClients();
 
-    dispatch(getClientsSuccess(data));
+    dispatch(getClientsSuccess(clients));
+
+    return true;
   } catch (error) {
-    dispatch(getClientsFailed(error));
+    // dispatch(getClientsFailed(error.message));
+    dispatch(getClientsSuccess([]));
+
+    return true;
   }
 };
 

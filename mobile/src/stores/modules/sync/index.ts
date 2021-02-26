@@ -2,6 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 
 import { AppThunk } from "../..";
+import { fetchClients } from "../client";
+import { fetchOrders } from "../order";
+import { fetchProducts } from "../product";
 
 export enum SyncStatus {
   Synced = "Sincronizado",
@@ -59,11 +62,15 @@ const syncData = (): AppThunk => async (dispatch) => {
   dispatch(syncStart());
 
   try {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await Promise.all([
+      dispatch(fetchProducts()),
+      dispatch(fetchClients()),
+      dispatch(fetchOrders()),
+    ]);
 
     dispatch(syncSuccess());
   } catch (error) {
-    dispatch(syncFailed(error));
+    dispatch(syncFailed(error.message));
   }
 };
 

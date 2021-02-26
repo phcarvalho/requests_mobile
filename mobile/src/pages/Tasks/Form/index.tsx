@@ -10,6 +10,7 @@ import {
   Picker,
   PickerItem,
   DateTimePicker,
+  FormContent,
 } from "../../../components/Common";
 
 const typeItems: PickerItem[] = [
@@ -64,7 +65,7 @@ const taskInitialValues = {
 
 const taskSchema = yup.object().shape({
   date: yup.date().required("* Campo obrigatório"),
-  client: yup.string().required("* Campo obrigatório"),
+  // client: yup.string().required("* Campo obrigatório"),
   type: yup.string().required("* Campo obrigatório"),
   description: yup.string(),
   activity: yup.string().required("* Campo obrigatório"),
@@ -102,40 +103,44 @@ const TaskForm: React.FC = () => {
             errors,
           }) => (
             <>
-              <DateTimePicker
-                title="Data da Visita"
-                value={values.date}
-                onDateChange={(date) => setFieldValue("date", date)}
-              />
-              <Picker
-                title="Tipo de Visita"
-                items={typeItems}
-                selectedValue={values.type}
-                onValueChange={(itemValue) => setFieldValue("type", itemValue)}
-                errorMessage={touched.type && errors.type ? errors.type : ""}
-              />
-              <Input
-                label="Descrição da Visita"
-                placeholder="Descrição"
-                value={values.description}
-                onChangeText={handleChange("description")}
-                errorMessage={
-                  touched.description && errors.description
-                    ? errors.description
-                    : ""
-                }
-              />
-              <Picker
-                title="Atividade do Cliente"
-                items={activityItems}
-                selectedValue={values.activity}
-                onValueChange={(itemValue) =>
-                  setFieldValue("activity", itemValue)
-                }
-                errorMessage={
-                  touched.activity && errors.activity ? errors.activity : ""
-                }
-              />
+              <FormContent>
+                <DateTimePicker
+                  title="Data da Visita"
+                  value={values.date}
+                  onDateChange={(date) => setFieldValue("date", date)}
+                />
+                <Picker
+                  title="Tipo de Visita"
+                  items={typeItems}
+                  selectedValue={values.type}
+                  onValueChange={(itemValue) =>
+                    setFieldValue("type", itemValue)
+                  }
+                  errorMessage={touched.type && errors.type ? errors.type : ""}
+                />
+                <Input
+                  label="Descrição da Visita"
+                  placeholder="Descrição"
+                  value={values.description}
+                  onChangeText={handleChange("description")}
+                  errorMessage={
+                    touched.description && errors.description
+                      ? errors.description
+                      : ""
+                  }
+                />
+                <Picker
+                  title="Atividade do Cliente"
+                  items={activityItems}
+                  selectedValue={values.activity}
+                  onValueChange={(itemValue) =>
+                    setFieldValue("activity", itemValue)
+                  }
+                  errorMessage={
+                    touched.activity && errors.activity ? errors.activity : ""
+                  }
+                />
+              </FormContent>
               <Button title="Criar" onPress={() => handleSubmit()} />
             </>
           )}

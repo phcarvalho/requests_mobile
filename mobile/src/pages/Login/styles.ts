@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 
 export const LoginContainer = styled.View`
   justify-content: center;
-  background: #333;
+  background: #eee;
 `;
 
 export const ErrorText = styled(Text)`

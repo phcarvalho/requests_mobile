@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 import { Text } from "react-native-elements";
 
 export const PickerContainer = styled.View`
-  padding: 10px;
+  padding: 5px 10px;
 `;
 
 export const TitleText = styled(Text)`
@@ -13,7 +13,7 @@ export const TitleText = styled(Text)`
 `;
 
 export const ErrorText = styled(Text)`
-  padding: 5px;
+  padding: 5px 0 0;
   font-size: 12px;
 
   color: #ff1602;

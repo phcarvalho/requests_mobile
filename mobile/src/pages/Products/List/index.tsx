@@ -1,80 +1,87 @@
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import { Avatar, ListItem } from "react-native-elements";
-import { FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Avatar, ListItem, SearchBar, Text } from "react-native-elements";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, FlatList } from "react-native";
+
+import { RootState } from "../../../stores/modules/rootReducer";
+import { fetchProducts } from "../../../stores/modules/product";
 
 import { Container } from "../../../components/Common";
-import Header from "../../../components/Header";
+import { ProductAPIResponse } from "../../../types/products";
+import ArrowButton from "../../../components/Common/ArrowButton";
 
-// import { Container } from './styles';
-
-const products = [
-  {
-    id: "FAR-09AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-  {
-    id: "FAR-10AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-  {
-    id: "FAR-11AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-  {
-    id: "FAR-12AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-  {
-    id: "FAR-13AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-  {
-    id: "FAR-14AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-  {
-    id: "FAR-15AM",
-    name: "FAROL COM CARENAGEM OFF ROAD UNIVERSAL - SEM LAMPADA",
-    unit: "UN",
-  },
-];
+const productSearch = (product: ProductAPIResponse, searchText: string) => {
+  return (
+    product.CodigoERP.toLowerCase().includes(searchText.toLowerCase()) ||
+    product.Descricao.toLowerCase().includes(searchText.toLowerCase())
+  );
+};
 
 const ProductList: React.FC = () => {
-  const navigation = useNavigation();
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<
+    ProductAPIResponse[]
+  >([]);
+
+  const dispatch = useDispatch();
+
+  const { products, loading } = useSelector(
+    (state: RootState) => state.product
+  );
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const filteredProductsList = products.filter((product) =>
+        productSearch(product, searchText)
+      );
+
+      setFilteredProducts(filteredProductsList);
+    }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [searchText]);
 
   return (
-    <Container>
-      <Header
-        title="Produtos"
-        // rightComponent={{
-        //   icon: "add",
-        //   onPress: () => navigation.navigate("ProductForm"),
-        // }}
+    <Container
+      header={{
+        title: "Produtos",
+      }}
+    >
+      {showSearch && (
+        <SearchBar
+          placeholder="Procurar por produto"
+          value={searchText}
+          onChangeText={(value) => setSearchText(value)}
+          round
+        />
+      )}
+      <ArrowButton
+        isArrowUp={showSearch}
+        handleClick={() => setShowSearch(!showSearch)}
       />
       <FlatList
-        keyExtractor={(item, index) => item.id}
-        data={products}
+        keyExtractor={(item, index) => item.CodigoERP}
+        data={filteredProducts}
+        onRefresh={() => dispatch(fetchProducts())}
+        refreshing={loading}
         renderItem={({ item, index }) => (
-          <ListItem
-            key={index}
-            bottomDivider
-            onPress={() => console.log(item.name)}
-          >
+          <ListItem key={index} bottomDivider>
             <Avatar source={require("../../../../assets/flat-icons/box.png")} />
             <ListItem.Content>
-              <ListItem.Title numberOfLines={1}>{item.name}</ListItem.Title>
+              <ListItem.Title numberOfLines={1}>
+                {item.Descricao}
+              </ListItem.Title>
               <ListItem.Subtitle>
-                {item.id} - Unidade: {item.unit}
+                Código: {item.CodigoERP} - Unidade: {item.Unidade}
               </ListItem.Subtitle>
             </ListItem.Content>
-            <ListItem.Chevron />
           </ListItem>
         )}
       />

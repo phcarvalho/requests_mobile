@@ -6,7 +6,6 @@ import { useNavigation } from "@react-navigation/native";
 import { RootState } from "../../../stores/modules/rootReducer";
 import { resetCurrentClient } from "../../../stores/modules/client";
 
-import Header from "../../../components/Header";
 import { Container, RowView, Content, Field } from "../../../components/Common";
 
 import { formatNumberByMask } from "../../../utils/text";
@@ -17,6 +16,8 @@ const ClientDetail: React.FC = () => {
   const dispatch = useDispatch();
 
   const { currentClient } = useSelector((state: RootState) => state.client);
+
+  const isCompany = currentClient?.TipoDeCliente === "Jurídica";
 
   useEffect(() => {
     return () => {
@@ -53,27 +54,44 @@ const ClientDetail: React.FC = () => {
       scroll
     >
       <Content title="Informações do Cliente">
-        <Field title="Nome" value={currentClient.RazaoSocial} first />
+        <Field title="Código" value={currentClient.CodigoDoCliente} first />
+        <Field
+          title={isCompany ? "Razão Social" : "Nome"}
+          value={currentClient.RazaoSocial}
+        />
+        <Field
+          title={isCompany ? "Nome Fantasia" : "Apelido"}
+          value={currentClient.NomeFantasia}
+        />
         <RowView>
-          <Field title="Código" value={currentClient.CodigoDoCliente} row />
           <Field
-            title="CPF/CNPJ"
+            title={isCompany ? "CNPJ" : "CPF"}
             value={
               formatNumberByMask(
                 currentClient.CnpjCpf,
-                currentClient.CnpjCpf.length === 11
-                  ? "###.###.###-##"
-                  : "##.###.###/####-##"
+                isCompany ? "##.###.###/####-##" : "###.###.###-##"
               ).formattedValue
             }
             row
+            first
+          />
+          <Field
+            title={isCompany ? "Insc. Estadual" : "RG"}
+            value={currentClient.IeRG}
+            row
+            first
           />
         </RowView>
-        <RowView>
-          <Field title="Telefone" value={currentClient.Telefone} row />
-          <Field title="Celular" value={currentClient.Celular} row />
-        </RowView>
         <Field title="Lista de Preço" value={currentClient.ListaDePreco} />
+      </Content>
+      <Content title="Contato">
+        <RowView>
+          <Field title="Telefone" value={currentClient.Telefone} row first />
+          <Field title="Telefone 2" value={currentClient.Celular} row first />
+        </RowView>
+        <Field title="Celular" value={currentClient.Celular} />
+        <Field title="Email" value={currentClient.Email} />
+        <Field title="Email 2" value={currentClient.Email2} />
       </Content>
       <Content title="Endereço do Cliente">
         <Field title="Endereço" value={currentClient.Endereco} first />

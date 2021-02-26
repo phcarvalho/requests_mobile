@@ -4,83 +4,37 @@ import { Button, Input } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import * as yup from "yup";
 
-import {
-  Container,
-  Form,
-  Picker,
-  PickerItem,
-  DateTimePicker,
-} from "../../../components/Common";
+import { Container, Form, FormContent } from "../../../components/Common";
 
-const typeItems: PickerItem[] = [
-  {
-    label: "Técnica",
-    value: "Técnica",
-  },
-  {
-    label: "Comércio",
-    value: "Comércio",
-  },
-  {
-    label: "SAC",
-    value: "SAC",
-  },
-];
-
-const activityItems: PickerItem[] = [
-  {
-    label: "Aves",
-    value: "Aves",
-  },
-  {
-    label: "Suíno",
-    value: "Suíno",
-  },
-  {
-    label: "Leite",
-    value: "Leite",
-  },
-  {
-    label: "Corte",
-    value: "Corte",
-  },
-];
-
-interface TaskValues {
+interface OrderValues {
   date: Date;
   client: string;
-  type: string;
   description: string;
-  activity: string;
 }
 
-const taskInitialValues = {
+const orderInitialValues = {
   date: new Date(),
   client: "",
-  type: typeItems[0].value,
   description: "",
-  activity: activityItems[0].value,
 };
 
-const taskSchema = yup.object().shape({
+const orderSchema = yup.object().shape({
   date: yup.date().required("* Campo obrigatório"),
   client: yup.string().required("* Campo obrigatório"),
-  type: yup.string().required("* Campo obrigatório"),
   description: yup.string(),
-  activity: yup.string().required("* Campo obrigatório"),
 });
 
-const TaskForm: React.FC = () => {
+const OrderForm: React.FC = () => {
   const navigation = useNavigation();
 
-  const handleFormSubmit = (values: TaskValues) => {
+  const handleFormSubmit = (values: OrderValues) => {
     console.log(values);
   };
 
   return (
     <Container
       header={{
-        title: "Nova Atividade",
+        title: "Novo Pedido",
         rightComponent: {
           icon: "close",
           onPress: () => navigation.goBack(),
@@ -89,9 +43,9 @@ const TaskForm: React.FC = () => {
     >
       <Form>
         <Formik
-          initialValues={taskInitialValues}
+          initialValues={orderInitialValues}
           onSubmit={(values) => handleFormSubmit(values)}
-          validationSchema={taskSchema}
+          validationSchema={orderSchema}
         >
           {({
             handleChange,
@@ -102,17 +56,19 @@ const TaskForm: React.FC = () => {
             errors,
           }) => (
             <>
-              <Input
-                label="Descrição da Visita"
-                placeholder="Descrição"
-                value={values.description}
-                onChangeText={handleChange("description")}
-                errorMessage={
-                  touched.description && errors.description
-                    ? errors.description
-                    : ""
-                }
-              />
+              <FormContent>
+                <Input
+                  label="Descrição da Visita"
+                  placeholder="Descrição"
+                  value={values.description}
+                  onChangeText={handleChange("description")}
+                  errorMessage={
+                    touched.description && errors.description
+                      ? errors.description
+                      : ""
+                  }
+                />
+              </FormContent>
               <Button title="Criar" onPress={() => handleSubmit()} />
             </>
           )}
@@ -122,4 +78,4 @@ const TaskForm: React.FC = () => {
   );
 };
 
-export default TaskForm;
+export default OrderForm;

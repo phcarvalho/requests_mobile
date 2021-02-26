@@ -8,7 +8,7 @@ import * as yup from "yup";
 import { RootState } from "../../stores/modules/rootReducer";
 import { login } from "../../stores/modules/auth";
 
-import { Container, Form } from "../../components/Common";
+import { Container, Form, FormContent } from "../../components/Common";
 
 import { ErrorText, LoginContainer, LogoContainer } from "./styles";
 
@@ -43,7 +43,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container dark verticalCenter>
+    <Container verticalCenter>
       <StatusBar backgroundColor="#333" barStyle="light-content" />
       <LoginContainer>
         <LogoContainer>
@@ -64,7 +64,7 @@ const Login: React.FC = () => {
             validationSchema={loginSchema}
           >
             {({ handleChange, handleSubmit, values, touched, errors }) => (
-              <>
+              <FormContent>
                 <Input
                   label="Usuário"
                   placeholder="Digite seu usuário"
@@ -98,7 +98,7 @@ const Login: React.FC = () => {
                   onPress={() => handleSubmit()}
                   loading={loading}
                 />
-              </>
+              </FormContent>
             )}
           </Formik>
         </Form>
