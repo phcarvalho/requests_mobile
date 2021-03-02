@@ -3,7 +3,7 @@ import { Keyboard, TouchableWithoutFeedback, ScrollView } from "react-native";
 
 import { FormContainer, InnerContainer, TitleText } from "./styles";
 
-interface FormProps {
+interface FormContentProps {
   title?: string;
 }
 
@@ -17,7 +17,10 @@ export const Form: React.FC = ({ children }) => {
   );
 };
 
-export const FormContent: React.FC<FormProps> = ({ title, children }) => {
+export const FormContent: React.FC<FormContentProps> = ({
+  title,
+  children,
+}) => {
   return (
     <InnerContainer>
       {title && <TitleText>{title}</TitleText>}

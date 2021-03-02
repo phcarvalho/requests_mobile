@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Dimensions, FlatList } from "react-native";
-import { Avatar, ListItem } from "react-native-elements";
+import { Avatar, Icon, ListItem } from "react-native-elements";
 import { ProgressChart } from "react-native-chart-kit";
 
 import { RootState } from "../../stores/modules/rootReducer";
