@@ -5,7 +5,6 @@ import styled from "styled-components/native";
 export const FormContainer = styled(KeyboardAvoidingView).attrs({
   behavior: Platform.OS === "ios" ? "padding" : "height",
 })`
-  flex: 1;
   justify-content: space-between;
 `;
 

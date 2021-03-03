@@ -29,6 +29,11 @@ const theme: Theme = {
       margin: 10,
     },
   },
+  Input: {
+    containerStyle: {
+      flex: 1,
+    },
+  },
   SearchBar: {
     containerStyle: {
       backgroundColor: "#333",

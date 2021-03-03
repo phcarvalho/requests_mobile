@@ -3,6 +3,7 @@ import { Text } from "react-native-elements";
 
 export const PickerContainer = styled.View`
   padding: 5px 10px;
+  flex: 1;
 `;
 
 export const TitleText = styled(Text)`

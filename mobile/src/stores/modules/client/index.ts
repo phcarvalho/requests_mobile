@@ -63,11 +63,11 @@ const {
   resetClient,
 } = clientSlice.actions;
 
-const fetchClients = (): AppThunk => async (dispatch) => {
+const fetchClients = (userCode: string): AppThunk => async (dispatch) => {
   dispatch(getClientsStart());
 
   try {
-    const clients = await getClients();
+    const clients = await getClients({ codigoRepresentante: userCode });
 
     dispatch(getClientsSuccess(clients));
 

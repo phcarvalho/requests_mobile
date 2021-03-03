@@ -3,23 +3,20 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../..";
 
 import api from "../../../services/api";
+import { AuthAPIResponse } from "../../../types/auth";
 
 interface AuthState {
-  userId: number | null;
-  userName: string;
-  token: string;
   isSigned: boolean;
-  error: string;
   loading: boolean;
+  error: string;
+  user: AuthAPIResponse | null;
 }
 
 const initialState: AuthState = {
-  userId: null,
-  userName: "",
-  token: "",
   isSigned: false,
-  error: "",
   loading: false,
+  error: "",
+  user: null,
 };
 
 const authSlice = createSlice({
@@ -27,17 +24,11 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     authStart: (state) => {
+      state.error = "";
       state.loading = true;
     },
-    authSuccess: (
-      state,
-      action: PayloadAction<{ userId: number; userName: string; token: string }>
-    ) => {
-      const { userId, userName, token } = action.payload;
-
-      state.userId = userId;
-      state.userName = userName;
-      state.token = token;
+    authSuccess: (state, action: PayloadAction<AuthAPIResponse>) => {
+      state.user = action.payload;
       state.isSigned = true;
       state.error = "";
       state.loading = false;
@@ -62,13 +53,21 @@ const login = (userName: string, password: string): AppThunk => async (
   dispatch(authStart());
 
   try {
-    // const { data } = await api.post("/login", { userName, password });
+    const { data } = await api.get<AuthAPIResponse[]>("/cadastro", {
+      params: {
+        login: userName,
+        senha: password,
+        tipoApp: 5,
+      },
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    if (data.length > 0) {
+      dispatch(authSuccess(data[0]));
+    }
 
-    dispatch(authSuccess({ userId: 123, userName, token: "123" }));
+    throw Error;
   } catch (error) {
-    dispatch(authFailed(error));
+    dispatch(authFailed({ error: "Falha na autenticação" }));
   }
 };
 

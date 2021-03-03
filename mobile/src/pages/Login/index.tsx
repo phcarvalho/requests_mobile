@@ -57,48 +57,50 @@ const Login: React.FC = () => {
           />
         </LogoContainer>
         <Form>
-          <ErrorText>{error}</ErrorText>
           <Formik
             initialValues={loginInitialValues}
             onSubmit={(values) => handleFormSubmit(values)}
             validationSchema={loginSchema}
           >
             {({ handleChange, handleSubmit, values, touched, errors }) => (
-              <FormContent>
-                <Input
-                  label="Usuário"
-                  placeholder="Digite seu usuário"
-                  value={values.userName}
-                  onChangeText={handleChange("userName")}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  errorMessage={
-                    touched.userName && errors.userName ? errors.userName : ""
-                  }
-                  returnKeyType="next"
-                  onSubmitEditing={() => passwordRef?.current?.focus()}
-                  blurOnSubmit={false}
-                />
-                <Input
-                  label="Senha"
-                  placeholder="Digite sua senha"
-                  value={values.password}
-                  onChangeText={handleChange("password")}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry
-                  errorMessage={
-                    touched.password && errors.password ? errors.password : ""
-                  }
-                  onSubmitEditing={() => handleSubmit()}
-                  ref={passwordRef}
-                />
+              <>
+                <FormContent>
+                  <ErrorText>{error}</ErrorText>
+                  <Input
+                    label="Usuário"
+                    placeholder="Digite seu usuário"
+                    value={values.userName}
+                    onChangeText={handleChange("userName")}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    errorMessage={
+                      touched.userName && errors.userName ? errors.userName : ""
+                    }
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef?.current?.focus()}
+                    blurOnSubmit={false}
+                  />
+                  <Input
+                    label="Senha"
+                    placeholder="Digite sua senha"
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry
+                    errorMessage={
+                      touched.password && errors.password ? errors.password : ""
+                    }
+                    onSubmitEditing={() => handleSubmit()}
+                    ref={passwordRef}
+                  />
+                </FormContent>
                 <Button
                   title="Entrar"
                   onPress={() => handleSubmit()}
                   loading={loading}
                 />
-              </FormContent>
+              </>
             )}
           </Formik>
         </Form>

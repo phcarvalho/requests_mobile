@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Button, Input } from "react-native-elements";
 import { Formik } from "formik";
@@ -10,11 +10,29 @@ import {
   Picker,
   PickerItem,
   FormContent,
+  RowView,
 } from "../../../components/Common";
 import MaskedInput from "../../../components/MaskedInput";
+import { CityAPIResponse, states } from "../../../types/address";
+import api from "../../../services/api";
 
+const stateOptions: PickerItem[] = states.map((state) => ({
+  label: state,
+  value: state,
+}));
+
+const clientTypes: PickerItem[] = [
+  {
+    label: "Jurídica",
+    value: "Jurídica",
+  },
+  {
+    label: "Física",
+    value: "Física",
+  },
+];
 interface ClientValues {
-  clientType: "Física" | "Jurídica";
+  clientType: string;
   name: string;
   fantasyName: string;
   cnpjCPF: string;
@@ -35,7 +53,7 @@ interface ClientValues {
 }
 
 const clientInitialValues: ClientValues = {
-  clientType: "Jurídica",
+  clientType: clientTypes[0].value,
   name: "",
   fantasyName: "",
   cnpjCPF: "",
@@ -46,7 +64,7 @@ const clientInitialValues: ClientValues = {
   email: "",
   email2: "",
   city: "",
-  state: "",
+  state: stateOptions[0].value,
   region: "",
   district: "",
   zipcode: "",
@@ -79,18 +97,30 @@ const clientSchema = yup.object().shape({
   priceList: yup.string(),
 });
 
-const clientTypes: PickerItem[] = [
-  {
-    label: "Jurídica",
-    value: "Jurídica",
-  },
-  {
-    label: "Física",
-    value: "Física",
-  },
-];
-
 const ClientForm: React.FC = () => {
+  const [cityOptions, setCityOptions] = useState<PickerItem[]>([]);
+
+  const getCityOptions = async (uf: string) => {
+    const { data } = await api.get<CityAPIResponse[]>("/cidades", {
+      params: { uf: uf },
+    });
+
+    const cities: PickerItem[] = [];
+
+    data.forEach((city) => {
+      if (city.Cidade) {
+        cities.push({
+          label: city.Cidade,
+          value: city.Cidade,
+        });
+      }
+    });
+
+    setCityOptions(cities);
+
+    return cities[0].value ?? "";
+  };
+
   const navigation = useNavigation();
 
   const handleFormSubmit = async (values: ClientValues) => {
@@ -98,6 +128,10 @@ const ClientForm: React.FC = () => {
 
     console.log(values);
   };
+
+  useEffect(() => {
+    getCityOptions(clientInitialValues.state);
+  }, []);
 
   return (
     <Container
@@ -226,26 +260,28 @@ const ClientForm: React.FC = () => {
                 />
               </FormContent>
               <FormContent title="Contato">
-                <MaskedInput
-                  label="Telefone"
-                  placeholder="(xx) xxxx-xxxx"
-                  value={values.phone}
-                  onChangeText={handleChange("phone")}
-                  mask="(##) ####-####"
-                  errorMessage={
-                    touched.phone && errors.phone ? errors.phone : ""
-                  }
-                />
-                <MaskedInput
-                  label="Telefone 2"
-                  placeholder="(xx) xxxx-xxxx"
-                  value={values.phone2}
-                  onChangeText={handleChange("phone2")}
-                  mask="(##) ####-####"
-                  errorMessage={
-                    touched.phone2 && errors.phone2 ? errors.phone2 : ""
-                  }
-                />
+                <RowView>
+                  <MaskedInput
+                    label="Telefone"
+                    placeholder="(xx) xxxx-xxxx"
+                    value={values.phone}
+                    onChangeText={handleChange("phone")}
+                    mask="(##) ####-####"
+                    errorMessage={
+                      touched.phone && errors.phone ? errors.phone : ""
+                    }
+                  />
+                  <MaskedInput
+                    label="Telefone 2"
+                    placeholder="(xx) xxxx-xxxx"
+                    value={values.phone2}
+                    onChangeText={handleChange("phone2")}
+                    mask="(##) ####-####"
+                    errorMessage={
+                      touched.phone2 && errors.phone2 ? errors.phone2 : ""
+                    }
+                  />
+                </RowView>
                 <MaskedInput
                   label="Celular"
                   placeholder="(xx) xxxxx-xxxx"
@@ -278,31 +314,33 @@ const ClientForm: React.FC = () => {
                 />
               </FormContent>
               <FormContent title="Endereço">
-                <Input
-                  label="Estado"
-                  placeholder="Nome do Estado"
-                  value={values.state}
-                  onChangeText={handleChange("state")}
-                  errorMessage={
-                    touched.state && errors.state ? errors.state : ""
-                  }
-                />
-                <Input
-                  label="Cidade"
-                  placeholder="Nome da Cidade"
-                  value={values.city}
-                  onChangeText={handleChange("city")}
-                  errorMessage={touched.city && errors.city ? errors.city : ""}
-                />
-                <Input
-                  label="Região"
-                  placeholder="Nome da Região"
-                  value={values.region}
-                  onChangeText={handleChange("region")}
-                  errorMessage={
-                    touched.region && errors.region ? errors.region : ""
-                  }
-                />
+                <RowView>
+                  <Picker
+                    title="Estado"
+                    selectedValue={values.state}
+                    onValueChange={async (itemValue) => {
+                      const city = await getCityOptions(itemValue);
+                      setFieldValue("state", itemValue);
+                      setFieldValue("city", city);
+                    }}
+                    items={stateOptions}
+                    errorMessage={
+                      touched.state && errors.state ? errors.state : ""
+                    }
+                  />
+                  <Picker
+                    title="Cidade"
+                    selectedValue={values.city}
+                    onValueChange={(itemValue) =>
+                      setFieldValue("city", itemValue)
+                    }
+                    items={cityOptions}
+                    errorMessage={
+                      touched.city && errors.city ? errors.city : ""
+                    }
+                  />
+                </RowView>
+
                 <Input
                   label="Endereço"
                   placeholder="Endereço"
@@ -312,34 +350,48 @@ const ClientForm: React.FC = () => {
                     touched.address && errors.address ? errors.address : ""
                   }
                 />
-                <Input
-                  label="Complemento"
-                  placeholder="Complemento"
-                  value={values.address2}
-                  onChangeText={handleChange("address2")}
-                  errorMessage={
-                    touched.address2 && errors.address2 ? errors.address2 : ""
-                  }
-                />
-                <Input
-                  label="Bairro"
-                  placeholder="Bairro"
-                  value={values.district}
-                  onChangeText={handleChange("district")}
-                  errorMessage={
-                    touched.district && errors.district ? errors.district : ""
-                  }
-                />
-                <MaskedInput
-                  label="CEP"
-                  placeholder="CEP"
-                  value={values.zipcode}
-                  onChangeText={handleChange("zipcode")}
-                  mask="#####-###"
-                  errorMessage={
-                    touched.zipcode && errors.zipcode ? errors.zipcode : ""
-                  }
-                />
+                <RowView>
+                  <Input
+                    label="Região"
+                    placeholder="Nome da Região"
+                    value={values.region}
+                    onChangeText={handleChange("region")}
+                    errorMessage={
+                      touched.region && errors.region ? errors.region : ""
+                    }
+                  />
+                  <Input
+                    label="Complemento"
+                    placeholder="Complemento"
+                    value={values.address2}
+                    onChangeText={handleChange("address2")}
+                    errorMessage={
+                      touched.address2 && errors.address2 ? errors.address2 : ""
+                    }
+                  />
+                </RowView>
+
+                <RowView>
+                  <Input
+                    label="Bairro"
+                    placeholder="Bairro"
+                    value={values.district}
+                    onChangeText={handleChange("district")}
+                    errorMessage={
+                      touched.district && errors.district ? errors.district : ""
+                    }
+                  />
+                  <MaskedInput
+                    label="CEP"
+                    placeholder="CEP"
+                    value={values.zipcode}
+                    onChangeText={handleChange("zipcode")}
+                    mask="#####-###"
+                    errorMessage={
+                      touched.zipcode && errors.zipcode ? errors.zipcode : ""
+                    }
+                  />
+                </RowView>
               </FormContent>
               <Button title="Criar" onPress={() => handleSubmit()} />
             </>
