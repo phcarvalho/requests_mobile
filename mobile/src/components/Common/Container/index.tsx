@@ -26,9 +26,7 @@ export const Container: React.FC<ContainerProps> = ({
 }) => {
   return (
     <MainContainer dark={dark}>
-      {header && (
-        <Header title={header.title} rightComponent={header.rightComponent} />
-      )}
+      {header && <Header {...header} />}
       {scroll ? (
         <ScrollContentContainer
           verticalCenter={verticalCenter}

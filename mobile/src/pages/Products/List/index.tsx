@@ -54,18 +54,6 @@ const ProductList: React.FC = () => {
         title: "Produtos",
       }}
     >
-      {showSearch && (
-        <SearchBar
-          placeholder="Procurar por produto"
-          value={searchText}
-          onChangeText={(value) => setSearchText(value)}
-          round
-        />
-      )}
-      <ArrowButton
-        isArrowUp={showSearch}
-        handleClick={() => setShowSearch(!showSearch)}
-      />
       <FlatList
         keyExtractor={(item, index) => item.CodigoERP}
         data={filteredProducts}

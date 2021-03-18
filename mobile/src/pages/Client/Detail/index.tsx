@@ -1,23 +1,26 @@
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { RootState } from "../../../stores/modules/rootReducer";
 import { resetCurrentClient } from "../../../stores/modules/client";
 
-import { Container, RowView, Content, Field } from "../../../components/Common";
+import { Container } from "../../../components/Common";
 
-import { formatNumberByMask } from "../../../utils/text";
-// import { Container } from './styles';
+import ClientDetailAddress from "./Address";
+import ClientDetailInfo from "./Info";
+import ClientDetailContact from "./Contact";
+
+const Tab = createBottomTabNavigator();
 
 const ClientDetail: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const { currentClient } = useSelector((state: RootState) => state.client);
-
-  const isCompany = currentClient?.TipoDeCliente === "Jurídica";
 
   useEffect(() => {
     return () => {
@@ -29,7 +32,7 @@ const ClientDetail: React.FC = () => {
     return (
       <Container
         header={{
-          title: "Detalhes do Cliente",
+          title: "Detalhes do cliente",
           rightComponent: {
             icon: "close",
             onPress: () => navigation.goBack(),
@@ -45,75 +48,54 @@ const ClientDetail: React.FC = () => {
   return (
     <Container
       header={{
-        title: currentClient.CodigoDoCliente,
+        title: currentClient.RazaoSocial,
         rightComponent: {
           icon: "close",
           onPress: () => navigation.goBack(),
         },
       }}
-      scroll
     >
-      <Content title="Informações do Cliente">
-        <Field title="Código" value={currentClient.CodigoDoCliente} first />
-        <Field
-          title={isCompany ? "Razão Social" : "Nome"}
-          value={currentClient.RazaoSocial}
+      <Tab.Navigator
+        tabBarOptions={{
+          style: {
+            backgroundColor: "#333",
+          },
+          activeTintColor: "#fff",
+          inactiveTintColor: "#666",
+        }}
+      >
+        <Tab.Screen
+          name="Informações"
+          component={ClientDetailInfo}
+          options={{
+            tabBarIcon: ({ color, size }): ReactNode => (
+              <MaterialIcons name="person" color={color} size={size} />
+            ),
+          }}
         />
-        <Field
-          title={isCompany ? "Nome Fantasia" : "Apelido"}
-          value={currentClient.NomeFantasia}
+        <Tab.Screen
+          name="Contato"
+          component={ClientDetailContact}
+          options={{
+            tabBarIcon: ({ color, size }): ReactNode => (
+              <MaterialCommunityIcons
+                name="book-account"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
         />
-        <RowView>
-          <Field
-            title={isCompany ? "CNPJ" : "CPF"}
-            value={
-              formatNumberByMask(
-                currentClient.CnpjCpf,
-                isCompany ? "##.###.###/####-##" : "###.###.###-##"
-              ).formattedValue
-            }
-            row
-            first
-          />
-          <Field
-            title={isCompany ? "Insc. Estadual" : "RG"}
-            value={currentClient.IeRG}
-            row
-            first
-          />
-        </RowView>
-        <Field title="Lista de Preço" value={currentClient.ListaDePreco} />
-      </Content>
-      <Content title="Contato">
-        <RowView>
-          <Field title="Telefone" value={currentClient.Telefone} row first />
-          <Field title="Telefone 2" value={currentClient.Celular} row first />
-        </RowView>
-        <Field title="Celular" value={currentClient.Celular} />
-        <Field title="Email" value={currentClient.Email} />
-        <Field title="Email 2" value={currentClient.Email2} />
-      </Content>
-      <Content title="Endereço do Cliente">
-        <Field title="Endereço" value={currentClient.Endereco} first />
-        <RowView>
-          <Field title="Bairro" value={currentClient.Bairro} row />
-          <Field title="Complemento" value={currentClient.Complemento} row />
-        </RowView>
-        <RowView>
-          <Field title="Cidade" value={currentClient.Cidade} row />
-          <Field title="Estado" value={currentClient.Estado} row />
-        </RowView>
-        <RowView>
-          <Field
-            title="CEP"
-            value={
-              formatNumberByMask(currentClient.CEP, "##.###-###").formattedValue
-            }
-            row
-          />
-          <Field title="Região" value={currentClient.Regiao} row />
-        </RowView>
-      </Content>
+        <Tab.Screen
+          name="Endereço"
+          component={ClientDetailAddress}
+          options={{
+            tabBarIcon: ({ color, size }): ReactNode => (
+              <MaterialIcons name="map" color={color} size={size} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     </Container>
   );
 };

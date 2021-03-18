@@ -58,14 +58,13 @@ const syncSlice = createSlice({
 
 const { syncStart, syncSuccess, syncFailed, resetSync } = syncSlice.actions;
 
-const syncData = (): AppThunk => async (dispatch) => {
+const syncData = (userCode: string): AppThunk => async (dispatch) => {
   dispatch(syncStart());
 
   try {
     await Promise.all([
       dispatch(fetchProducts()),
-      dispatch(fetchClients()),
-      dispatch(fetchOrders()),
+      dispatch(fetchClients(userCode)),
     ]);
 
     dispatch(syncSuccess());

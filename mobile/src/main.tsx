@@ -10,11 +10,11 @@ import Login from "./pages/Login";
 const Main: React.FC = () => {
   const dispatch = useDispatch();
 
-  const { isSigned } = useSelector((state: RootState) => state.auth);
+  const { isSigned, user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (isSigned) {
-      dispatch(syncData());
+      dispatch(syncData(user.CodigoDoRepresentante));
     }
   }, [isSigned]);
 

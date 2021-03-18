@@ -12,17 +12,30 @@ export interface HeaderProps {
         color?: string;
         onPress?: () => void;
       };
+  leftComponent?:
+    | React.ReactElement
+    | {
+        icon?: string;
+        color?: string;
+        onPress?: () => void;
+      };
 }
 
-const Header: React.FC<HeaderProps> = ({ title, rightComponent }) => {
+const Header: React.FC<HeaderProps> = ({
+  title,
+  rightComponent,
+  leftComponent,
+}) => {
   const navigation = useNavigation();
 
   return (
     <HeaderRNE
-      leftComponent={{
-        icon: "menu",
-        onPress: () => navigation.dispatch(DrawerActions.openDrawer()),
-      }}
+      leftComponent={
+        leftComponent ?? {
+          icon: "menu",
+          onPress: () => navigation.dispatch(DrawerActions.openDrawer()),
+        }
+      }
       centerComponent={{ text: title }}
       rightComponent={rightComponent}
     />

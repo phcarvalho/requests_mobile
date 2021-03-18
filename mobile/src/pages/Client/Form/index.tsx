@@ -1,56 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode } from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { Button, Input } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import {
-  Form,
-  Container,
-  Picker,
-  PickerItem,
-  FormContent,
-  RowView,
-} from "../../../components/Common";
-import MaskedInput from "../../../components/MaskedInput";
-import { CityAPIResponse, states } from "../../../types/address";
-import api from "../../../services/api";
+import { Container } from "../../../components/Common";
 
-const stateOptions: PickerItem[] = states.map((state) => ({
-  label: state,
-  value: state,
-}));
+import { clientTypes, ClientValues } from "./types";
+import { states } from "../../../types/address";
 
-const clientTypes: PickerItem[] = [
-  {
-    label: "Jurídica",
-    value: "Jurídica",
-  },
-  {
-    label: "Física",
-    value: "Física",
-  },
-];
-interface ClientValues {
-  clientType: string;
-  name: string;
-  fantasyName: string;
-  cnpjCPF: string;
-  ieRG: string;
-  phone: string;
-  phone2: string;
-  cellphone: string;
-  email: string;
-  email2: string;
-  region: string;
-  city: string;
-  state: string;
-  zipcode: string;
-  district: string;
-  address: string;
-  address2: string;
-  priceList: string;
-}
+import ClientFormInfo from "./Info";
+import ClientFormContact from "./Contact";
+import ClientFormAddress from "./Address";
+import { ClientAPICreation, ClientType } from "../../../types/clients";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../stores/modules/rootReducer";
 
 const clientInitialValues: ClientValues = {
   clientType: clientTypes[0].value,
@@ -64,7 +29,7 @@ const clientInitialValues: ClientValues = {
   email: "",
   email2: "",
   city: "",
-  state: stateOptions[0].value,
+  state: states[0],
   region: "",
   district: "",
   zipcode: "",
@@ -97,308 +62,101 @@ const clientSchema = yup.object().shape({
   priceList: yup.string(),
 });
 
+const Tab = createBottomTabNavigator();
+
 const ClientForm: React.FC = () => {
-  const [cityOptions, setCityOptions] = useState<PickerItem[]>([]);
-
-  const getCityOptions = async (uf: string) => {
-    const { data } = await api.get<CityAPIResponse[]>("/cidades", {
-      params: { uf: uf },
-    });
-
-    const cities: PickerItem[] = [];
-
-    data.forEach((city) => {
-      if (city.Cidade) {
-        cities.push({
-          label: city.Cidade,
-          value: city.Cidade,
-        });
-      }
-    });
-
-    setCityOptions(cities);
-
-    return cities[0].value ?? "";
-  };
-
   const navigation = useNavigation();
 
-  const handleFormSubmit = async (values: ClientValues) => {
-    const {} = values;
+  const { user } = useSelector((state: RootState) => state.auth);
 
-    console.log(values);
+  const handleSubmit = (values: ClientValues) => {
+    const body: ClientAPICreation = {
+      TipoDeCliente: values.clientType as ClientType,
+      RazaoSocial: values.name,
+      NomeFantasia: values.fantasyName,
+      CnpjCpf: values.cnpjCPF,
+      IeRG: values.ieRG,
+      ListaDePreco: values.priceList,
+      Regiao: values.region,
+      Endereco: values.address,
+      Bairro: values.district,
+      Complemento: values.address2,
+      CEP: values.zipcode,
+      Cidade: values.city,
+      Estado: values.state,
+      Telefone: values.phone,
+      OutroTelefone: values.phone2,
+      Celular: values.cellphone,
+      Email: values.email,
+      Email2: values.email2,
+      Representante: user.CodigoDoRepresentante,
+    };
   };
 
-  useEffect(() => {
-    getCityOptions(clientInitialValues.state);
-  }, []);
-
   return (
-    <Container
-      header={{
-        title: "Novo Cliente",
-        rightComponent: {
-          icon: "close",
-          onPress: () => navigation.goBack(),
-        },
-      }}
+    <Formik
+      initialValues={clientInitialValues}
+      validationSchema={clientSchema}
+      onSubmit={(values) => handleSubmit(values)}
     >
-      <Form>
-        <Formik
-          initialValues={clientInitialValues}
-          onSubmit={(values) => handleFormSubmit(values)}
-          validationSchema={clientSchema}
+      {({ handleSubmit }) => (
+        <Container
+          header={{
+            title: "Novo Cliente",
+            leftComponent: {
+              icon: "arrow-back",
+              onPress: () => navigation.goBack(),
+            },
+            rightComponent: {
+              icon: "done",
+              onPress: () => handleSubmit(),
+            },
+          }}
         >
-          {({
-            handleChange,
-            handleSubmit,
-            setFieldValue,
-            values,
-            touched,
-            errors,
-          }) => (
-            <>
-              <FormContent title="Informações">
-                <Picker
-                  title="Tipo de Cliente"
-                  items={clientTypes}
-                  selectedValue={values.clientType}
-                  onValueChange={(itemValue) =>
-                    setFieldValue("clientType", itemValue)
-                  }
-                  errorMessage={
-                    touched.clientType && errors.clientType
-                      ? errors.clientType
-                      : ""
-                  }
-                />
-                <Input
-                  label={
-                    values.clientType === "Jurídica" ? "Razão Social" : "Nome"
-                  }
-                  placeholder={
-                    values.clientType === "Jurídica" ? "Razão Social" : "Nome"
-                  }
-                  value={values.name}
-                  onChangeText={handleChange("name")}
-                  errorMessage={touched.name && errors.name ? errors.name : ""}
-                />
-                <Input
-                  label={
-                    values.clientType === "Jurídica"
-                      ? "Nome Fantasia"
-                      : "Apelido"
-                  }
-                  placeholder={
-                    values.clientType === "Jurídica"
-                      ? "Nome Fantasia"
-                      : "Apelido"
-                  }
-                  value={values.fantasyName}
-                  onChangeText={handleChange("fantasyName")}
-                  errorMessage={
-                    touched.fantasyName && errors.fantasyName
-                      ? errors.fantasyName
-                      : ""
-                  }
-                />
-                {values.clientType === "Jurídica" ? (
-                  <>
-                    <MaskedInput
-                      label={"CNPJ"}
-                      placeholder="XX.XXX.XXX/XXXX-XX"
-                      value={values.cnpjCPF}
-                      onChangeText={handleChange("cnpjCPF")}
-                      mask="##.###.###/####-##"
-                      errorMessage={
-                        touched.cnpjCPF && errors.cnpjCPF ? errors.cnpjCPF : ""
-                      }
-                    />
-                    <Input
-                      label="Inscrição Estadual"
-                      placeholder="Inscrição Estadual"
-                      value={values.ieRG}
-                      onChangeText={handleChange("ieRG")}
-                      errorMessage={
-                        touched.ieRG && errors.ieRG ? errors.ieRG : ""
-                      }
-                    />
-                  </>
-                ) : (
-                  <>
-                    <MaskedInput
-                      label="CPF"
-                      placeholder="XXX.XXX.XXX-XX"
-                      value={values.cnpjCPF}
-                      onChangeText={handleChange("cnpjCPF")}
-                      mask="###.###.###-##"
-                      errorMessage={
-                        touched.cnpjCPF && errors.cnpjCPF ? errors.cnpjCPF : ""
-                      }
-                    />
-                    <Input
-                      label="RG"
-                      placeholder="Número do RG"
-                      value={values.ieRG}
-                      onChangeText={handleChange("ieRG")}
-                      errorMessage={
-                        touched.ieRG && errors.ieRG ? errors.ieRG : ""
-                      }
-                    />
-                  </>
-                )}
-                <Input
-                  label="Lista de Preço"
-                  placeholder="Lista de Preço"
-                  value={values.priceList}
-                  onChangeText={handleChange("priceList")}
-                  errorMessage={
-                    touched.priceList && errors.priceList
-                      ? errors.priceList
-                      : ""
-                  }
-                />
-              </FormContent>
-              <FormContent title="Contato">
-                <RowView>
-                  <MaskedInput
-                    label="Telefone"
-                    placeholder="(xx) xxxx-xxxx"
-                    value={values.phone}
-                    onChangeText={handleChange("phone")}
-                    mask="(##) ####-####"
-                    errorMessage={
-                      touched.phone && errors.phone ? errors.phone : ""
-                    }
+          <Tab.Navigator
+            tabBarOptions={{
+              style: {
+                backgroundColor: "#333",
+              },
+              activeTintColor: "#fff",
+              inactiveTintColor: "#666",
+            }}
+          >
+            <Tab.Screen
+              name="Informações"
+              component={ClientFormInfo}
+              options={{
+                tabBarIcon: ({ color, size }): ReactNode => (
+                  <MaterialIcons name="person" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Contato"
+              component={ClientFormContact}
+              options={{
+                tabBarIcon: ({ color, size }): ReactNode => (
+                  <MaterialCommunityIcons
+                    name="book-account"
+                    color={color}
+                    size={size}
                   />
-                  <MaskedInput
-                    label="Telefone 2"
-                    placeholder="(xx) xxxx-xxxx"
-                    value={values.phone2}
-                    onChangeText={handleChange("phone2")}
-                    mask="(##) ####-####"
-                    errorMessage={
-                      touched.phone2 && errors.phone2 ? errors.phone2 : ""
-                    }
-                  />
-                </RowView>
-                <MaskedInput
-                  label="Celular"
-                  placeholder="(xx) xxxxx-xxxx"
-                  value={values.cellphone}
-                  onChangeText={handleChange("cellphone")}
-                  mask="(##) #####-####"
-                  errorMessage={
-                    touched.cellphone && errors.cellphone
-                      ? errors.cellphone
-                      : ""
-                  }
-                />
-                <Input
-                  label="E-mail"
-                  placeholder="nome@email.com.br"
-                  value={values.email}
-                  onChangeText={handleChange("email")}
-                  errorMessage={
-                    touched.email && errors.email ? errors.email : ""
-                  }
-                />
-                <Input
-                  label="E-mail 2"
-                  placeholder="nome@email.com.br"
-                  value={values.email2}
-                  onChangeText={handleChange("email2")}
-                  errorMessage={
-                    touched.email2 && errors.email2 ? errors.email2 : ""
-                  }
-                />
-              </FormContent>
-              <FormContent title="Endereço">
-                <RowView>
-                  <Picker
-                    title="Estado"
-                    selectedValue={values.state}
-                    onValueChange={async (itemValue) => {
-                      const city = await getCityOptions(itemValue);
-                      setFieldValue("state", itemValue);
-                      setFieldValue("city", city);
-                    }}
-                    items={stateOptions}
-                    errorMessage={
-                      touched.state && errors.state ? errors.state : ""
-                    }
-                  />
-                  <Picker
-                    title="Cidade"
-                    selectedValue={values.city}
-                    onValueChange={(itemValue) =>
-                      setFieldValue("city", itemValue)
-                    }
-                    items={cityOptions}
-                    errorMessage={
-                      touched.city && errors.city ? errors.city : ""
-                    }
-                  />
-                </RowView>
-
-                <Input
-                  label="Endereço"
-                  placeholder="Endereço"
-                  value={values.address}
-                  onChangeText={handleChange("address")}
-                  errorMessage={
-                    touched.address && errors.address ? errors.address : ""
-                  }
-                />
-                <RowView>
-                  <Input
-                    label="Região"
-                    placeholder="Nome da Região"
-                    value={values.region}
-                    onChangeText={handleChange("region")}
-                    errorMessage={
-                      touched.region && errors.region ? errors.region : ""
-                    }
-                  />
-                  <Input
-                    label="Complemento"
-                    placeholder="Complemento"
-                    value={values.address2}
-                    onChangeText={handleChange("address2")}
-                    errorMessage={
-                      touched.address2 && errors.address2 ? errors.address2 : ""
-                    }
-                  />
-                </RowView>
-
-                <RowView>
-                  <Input
-                    label="Bairro"
-                    placeholder="Bairro"
-                    value={values.district}
-                    onChangeText={handleChange("district")}
-                    errorMessage={
-                      touched.district && errors.district ? errors.district : ""
-                    }
-                  />
-                  <MaskedInput
-                    label="CEP"
-                    placeholder="CEP"
-                    value={values.zipcode}
-                    onChangeText={handleChange("zipcode")}
-                    mask="#####-###"
-                    errorMessage={
-                      touched.zipcode && errors.zipcode ? errors.zipcode : ""
-                    }
-                  />
-                </RowView>
-              </FormContent>
-              <Button title="Criar" onPress={() => handleSubmit()} />
-            </>
-          )}
-        </Formik>
-      </Form>
-    </Container>
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Endereço"
+              component={ClientFormAddress}
+              options={{
+                tabBarIcon: ({ color, size }): ReactNode => (
+                  <MaterialIcons name="map" color={color} size={size} />
+                ),
+              }}
+            />
+          </Tab.Navigator>
+        </Container>
+      )}
+    </Formik>
   );
 };
 

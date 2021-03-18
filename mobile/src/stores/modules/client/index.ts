@@ -73,8 +73,7 @@ const fetchClients = (userCode: string): AppThunk => async (dispatch) => {
 
     return true;
   } catch (error) {
-    // dispatch(getClientsFailed(error.message));
-    dispatch(getClientsSuccess([]));
+    dispatch(getClientsFailed(error.message));
 
     return true;
   }

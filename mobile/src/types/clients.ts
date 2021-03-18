@@ -1,6 +1,7 @@
+export type ClientType = "Jurídica" | "Física";
 export interface ClientAPIResponse {
   CodigoDoCliente: string;
-  TipoDeCliente: "Jurídica" | "Física";
+  TipoDeCliente: ClientType;
   RazaoSocial: string;
   NomeFantasia: string;
   CnpjCpf: string;
@@ -21,12 +22,16 @@ export interface ClientAPIResponse {
   Email2: string;
 }
 
+export interface ClientAPIResponseParams {
+  codigoRepresentante?: string;
+}
+
 export interface ClientAPICreation {
   RazaoSocial: string;
   NomeFantasia: string;
   CnpjCpf: string;
   IeRG: string;
-  TipoDeCliente: "Jurídica" | "Física";
+  TipoDeCliente: ClientType;
   ListaDePreco: string;
   Regiao: string;
   Endereco: string;
@@ -40,4 +45,5 @@ export interface ClientAPICreation {
   Celular: string;
   Email: string;
   Email2: string;
+  Representante: string;
 }

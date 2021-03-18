@@ -27,24 +27,24 @@ const routeOptions: RouteAttributes[] = [
     materialIconName: "home",
     component: Home,
   },
-  {
-    name: "Tasks",
-    title: "Atividades",
-    materialIconName: "list-alt",
-    component: Tasks,
-  },
+  // {
+  //   name: "Tasks",
+  //   title: "Atividades",
+  //   materialIconName: "list-alt",
+  //   component: Tasks,
+  // },
   {
     name: "Clients",
     title: "Clientes",
     materialIconName: "person",
     component: Clients,
   },
-  {
-    name: "Orders",
-    title: "Pedidos",
-    materialIconName: "receipt",
-    component: Orders,
-  },
+  // {
+  //   name: "Orders",
+  //   title: "Pedidos",
+  //   materialIconName: "receipt",
+  //   component: Orders,
+  // },
   {
     name: "Products",
     title: "Produtos",

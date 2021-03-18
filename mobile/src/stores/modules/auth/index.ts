@@ -9,14 +9,25 @@ interface AuthState {
   isSigned: boolean;
   loading: boolean;
   error: string;
-  user: AuthAPIResponse | null;
+  user: AuthAPIResponse;
 }
 
 const initialState: AuthState = {
   isSigned: false,
   loading: false,
   error: "",
-  user: null,
+  user: {
+    AcessoAplicativo: "False",
+    Apelido: "",
+    CodigoDoRepresentante: "",
+    Cpf: "",
+    Email: "",
+    Login: "",
+    Nome: "",
+    Telefone: "",
+    TipoCadastro: "",
+    Usuario: "",
+  },
 };
 
 const authSlice = createSlice({
@@ -53,19 +64,15 @@ const login = (userName: string, password: string): AppThunk => async (
   dispatch(authStart());
 
   try {
-    const { data } = await api.get<AuthAPIResponse[]>("/cadastro", {
+    const { data } = await api.get<AuthAPIResponse>("/cadastro", {
       params: {
         login: userName,
         senha: password,
-        tipoApp: 5,
+        tipoApp: 2,
       },
     });
 
-    if (data.length > 0) {
-      dispatch(authSuccess(data[0]));
-    }
-
-    throw Error;
+    dispatch(authSuccess(data));
   } catch (error) {
     dispatch(authFailed({ error: "Falha na autenticação" }));
   }
