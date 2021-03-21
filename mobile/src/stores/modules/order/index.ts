@@ -1,14 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../..";
+import { paymentConditions } from "../../../pages/Orders/infos";
 import api from "../../../services/api";
-import { OrderAPIResponse } from "../../../types/orders";
+import {
+  fetchPaymentConditions,
+  fetchPaymentTypes,
+} from "../../../services/orders";
+import {
+  OrderAPIResponse,
+  PaymentConditionAPIResponse,
+  PaymentTypeAPIResponse,
+} from "../../../types/orders";
+
+interface CurrentOrderInterface extends OrderAPIResponse {
+  totalAmount: string;
+}
 
 interface OrderState {
-  currentOrder: OrderAPIResponse | null;
+  currentOrder: CurrentOrderInterface | null;
   orders: OrderAPIResponse[];
   newOrders: OrderAPIResponse[];
   loading: boolean;
   error: string;
+  paymConditions: PaymentConditionAPIResponse[];
+  paymTypes: PaymentTypeAPIResponse[];
 }
 
 const initialState: OrderState = {
@@ -17,6 +32,8 @@ const initialState: OrderState = {
   newOrders: [],
   loading: false,
   error: "",
+  paymConditions: [],
+  paymTypes: [],
 };
 
 const orderSlice = createSlice({
@@ -35,8 +52,28 @@ const orderSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    setPaymConditions: (
+      state,
+      action: PayloadAction<PaymentConditionAPIResponse[]>
+    ) => {
+      state.paymConditions = action.payload;
+    },
+    setPaymTypes: (state, action: PayloadAction<PaymentTypeAPIResponse[]>) => {
+      state.paymTypes = action.payload;
+    },
     setCurrentOrder: (state, action: PayloadAction<OrderAPIResponse>) => {
-      state.currentOrder = action.payload;
+      const order = action.payload;
+
+      let totalAmount = 0;
+
+      order.ItensPedidos.forEach((product) => {
+        totalAmount += parseFloat(product.ValorTotal.replace(/[^\d.,]/gi, ""));
+      });
+
+      state.currentOrder = {
+        ...order,
+        totalAmount: `R$ ${totalAmount.toFixed(2).replace(".", ",")}`,
+      };
     },
     resetCurrentOrder: (state) => {
       state.currentOrder = null;
@@ -52,20 +89,25 @@ const {
   getOrdersSuccess,
   getOrdersFailed,
   setCurrentOrder,
+  setPaymConditions,
+  setPaymTypes,
   resetCurrentOrder,
   resetOrder,
 } = orderSlice.actions;
 
-const fetchOrders = (): AppThunk => async (dispatch) => {
+const fetchOrders = (userCode: string): AppThunk => async (dispatch) => {
   dispatch(getOrdersStart());
 
   try {
     const { data } = await api.get<OrderAPIResponse[]>("/Pedidos", {
-      params: {
-        numeroPedido: "90078071",
-        mostraItem: true,
-      },
+      params: { CodigoRepresentante: userCode },
     });
+
+    const paymTypes = await fetchPaymentTypes();
+    const paymConditions = await fetchPaymentConditions();
+
+    dispatch(setPaymTypes(paymTypes));
+    dispatch(setPaymConditions(paymConditions));
 
     dispatch(getOrdersSuccess(data));
   } catch (error) {

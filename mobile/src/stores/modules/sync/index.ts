@@ -65,6 +65,7 @@ const syncData = (userCode: string): AppThunk => async (dispatch) => {
     await Promise.all([
       dispatch(fetchProducts()),
       dispatch(fetchClients(userCode)),
+      dispatch(fetchOrders(userCode)),
     ]);
 
     dispatch(syncSuccess());

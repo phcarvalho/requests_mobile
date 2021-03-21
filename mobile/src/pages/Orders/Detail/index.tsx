@@ -1,15 +1,19 @@
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, FlatList } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { resetCurrentOrder } from "../../../stores/modules/order";
 import { RootState } from "../../../stores/modules/rootReducer";
 
-import { Container, Content, Field, RowView } from "../../../components/Common";
-import { Avatar, ListItem } from "react-native-elements";
+import { Container } from "../../../components/Common";
 
-// import { Container } from './styles';
+import OrderDetailInfo from "./Info";
+import OrderDetailProducts from "./Products";
+
+const Tab = createBottomTabNavigator();
 
 const OrderDetail: React.FC = () => {
   const navigation = useNavigation();
@@ -24,20 +28,9 @@ const OrderDetail: React.FC = () => {
   }, []);
 
   if (!currentOrder) {
-    return (
-      <Container
-        header={{
-          title: "Detalhes dos Pedidos",
-          rightComponent: {
-            icon: "close",
-            onPress: () => navigation.goBack(),
-          },
-        }}
-        verticalCenter
-      >
-        <ActivityIndicator size="small" color="#666" />
-      </Container>
-    );
+    navigation.goBack();
+
+    return null;
   }
 
   return (
@@ -50,57 +43,38 @@ const OrderDetail: React.FC = () => {
         },
       }}
     >
-      <Content title="Informações do Pedido">
-        <Field title="Código do Pedido" value={currentOrder.Pedido} first />
-        <Field title="Cliente" value={currentOrder.Cliente} first />
-        <RowView>
-          <Field
-            title="Forma de Pgto."
-            value={currentOrder.FormaDePagamento}
-            row
-          />
-          <Field
-            title="Condição de Pgto."
-            value={currentOrder.CondicaoDePagamento}
-            row
-          />
-        </RowView>
-        <RowView>
-          <Field
-            title="Data de Criação"
-            value={currentOrder.DataDeCriacao}
-            row
-          />
-          <Field
-            title="Data de Entrega"
-            value={currentOrder.DataDeEntrega}
-            row
-          />
-        </RowView>
-      </Content>
-      <Content title="Itens do Pedido" fill>
-        <FlatList
-          keyExtractor={(item, index) => `product-${index}`}
-          data={currentOrder.ItensPedidos}
-          renderItem={({ item, index }) => (
-            <ListItem key={index} bottomDivider>
-              <Avatar
-                source={require("../../../../assets/flat-icons/box.png")}
-              />
-              <ListItem.Content>
-                <ListItem.Title numberOfLines={1}>
-                  {item.Produto}
-                </ListItem.Title>
-                <ListItem.Subtitle>
-                  Preço:{item.PrecoUnitario} - Qtde:{" "}
-                  {parseFloat(item.Quantidade).toFixed(2)}
-                </ListItem.Subtitle>
-                <ListItem.Subtitle>Total: {item.ValorTotal}</ListItem.Subtitle>
-              </ListItem.Content>
-            </ListItem>
-          )}
+      <Tab.Navigator
+        tabBarOptions={{
+          style: {
+            backgroundColor: "#333",
+          },
+          activeTintColor: "#fff",
+          inactiveTintColor: "#666",
+        }}
+      >
+        <Tab.Screen
+          name="Informações"
+          component={OrderDetailInfo}
+          options={{
+            tabBarIcon: ({ color, size }): ReactNode => (
+              <MaterialIcons name="list-alt" color={color} size={size} />
+            ),
+          }}
         />
-      </Content>
+        <Tab.Screen
+          name="Produtos"
+          component={OrderDetailProducts}
+          options={{
+            tabBarIcon: ({ color, size }): ReactNode => (
+              <MaterialCommunityIcons
+                name="clipboard-list-outline"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     </Container>
   );
 };

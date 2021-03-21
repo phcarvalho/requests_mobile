@@ -48,13 +48,11 @@ const ClientDetailInfo: React.FC = () => {
               ).formattedValue
             }
             row
-            first
           />
           <Field
             title={isCompany ? "Insc. Estadual" : "RG"}
             value={currentClient.IeRG}
             row
-            first
           />
         </RowView>
         <Field title="Lista de Preço" value={currentClient.ListaDePreco} />

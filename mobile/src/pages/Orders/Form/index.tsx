@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Avatar, Button, Icon, ListItem } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import * as yup from "yup";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import {
   Container,
@@ -14,98 +15,122 @@ import {
   Content,
 } from "../../../components/Common";
 
-import { paymentTypes, paymentConditions } from "../infos";
 import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../stores/modules/rootReducer";
-
-const paymentTypeItems: PickerItem[] = paymentTypes.map((type) => ({
-  label: type.name,
-  value: `${type.id}`,
-}));
-
-const paymentConditionId = paymentConditions.find(
-  (condition) => condition.guid === paymentTypes[0].guid
-)?.id;
-
-interface OrderProduct {
-  id: string;
-  name: string;
-  price: string;
-  qty: string;
-}
-interface OrderValues {
-  deliveryDate: Date;
-  paymentType: string;
-  paymentCondition: string;
-  client: string;
-}
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import OrderFormInfo from "./Info";
+import OrderFormProducts from "./Products";
+import { OrderValues } from "./types";
 
 const orderInitialValues: OrderValues = {
   deliveryDate: new Date(),
-  paymentType: `${paymentTypes[0].id}`,
-  paymentCondition: `${paymentConditionId}`,
+  paymentType: "",
+  paymentCondition: "",
   client: "",
+  products: [],
 };
 
-const orderSchema = yup.object().shape({
-  // date: yup.date().required("* Campo obrigatório"),
-  // paymentType: yup.string().required("* Campo obrigatório"),
-  // paymentCondition: yup.string().required("* Campo obrigatório"),
-  // client: yup.string().required("* Campo obrigatório"),
-});
+// const orderSchema = yup.object().shape({
+//   date: yup.date().required("* Campo obrigatório"),
+//   paymentType: yup.string().required("* Campo obrigatório"),
+//   paymentCondition: yup.string().required("* Campo obrigatório"),
+//   client: yup.string().required("* Campo obrigatório"),
+// });
+
+const Tab = createBottomTabNavigator();
 
 const OrderForm: React.FC = () => {
-  const [selectedTypeGUID, setSelectedTypeGUID] = useState(
-    paymentTypes[0].guid
-  );
-  const [conditionItems, setConditionItems] = useState<PickerItem[]>([]);
-  const [clientItems, setClientItems] = useState<PickerItem[]>([]);
-  const [products, setProducts] = useState<OrderProduct[]>([]);
+  // const [conditionItems, setConditionItems] = useState<PickerItem[]>([]);
+  // const [clientItems, setClientItems] = useState<PickerItem[]>([]);
+  // const [products, setProducts] = useState<OrderProduct[]>([]);
 
   const navigation = useNavigation();
 
-  const { clients } = useSelector((state: RootState) => state.client);
+  // const { clients } = useSelector((state: RootState) => state.client);
 
-  const handleFormSubmit = (values: OrderValues) => {
+  // const handleFormSubmit = (values: OrderValues) => {
+  //   // console.log(values);
+  // };
+
+  // useEffect(() => {
+  //   if (clients.length > 0) {
+  //     const newClientItems = clients.map((client) => ({
+  //       label: client.RazaoSocial,
+  //       value: client.CnpjCpf,
+  //     }));
+
+  //     setClientItems(newClientItems);
+  //   }
+  // }, [clients]);
+
+  // useEffect(() => {
+  //   const newPaymentConditionItems: PickerItem[] = paymentConditions
+  //     .filter((condition) => condition.guid === selectedTypeGUID)
+  //     .map((condition) => ({
+  //       label: condition.name,
+  //       value: `${condition.id}`,
+  //     }));
+
+  //   setConditionItems(newPaymentConditionItems);
+  // }, [selectedTypeGUID]);
+
+  const handleSubmit = (values: any) => {
     console.log(values);
   };
 
-  useEffect(() => {
-    console.log(clients);
-
-    if (clients.length > 0) {
-      const newClientItems = clients.map((client) => ({
-        label: client.RazaoSocial,
-        value: client.CnpjCpf,
-      }));
-
-      setClientItems(newClientItems);
-    }
-  }, [clients]);
-
-  useEffect(() => {
-    const newPaymentConditionItems: PickerItem[] = paymentConditions
-      .filter((condition) => condition.guid === selectedTypeGUID)
-      .map((condition) => ({
-        label: condition.name,
-        value: `${condition.id}`,
-      }));
-
-    setConditionItems(newPaymentConditionItems);
-  }, [selectedTypeGUID]);
-
   return (
-    <Container
-      header={{
-        title: "Novo Pedido",
-        rightComponent: {
-          icon: "close",
-          onPress: () => navigation.goBack(),
-        },
-      }}
+    <Formik
+      initialValues={orderInitialValues}
+      onSubmit={(values) => handleSubmit(values)}
     >
-      <Form>
+      {({ handleSubmit }) => (
+        <Container
+          header={{
+            title: "Novo Pedido",
+            leftComponent: {
+              icon: "close",
+              onPress: () => navigation.goBack(),
+            },
+            rightComponent: {
+              icon: "done",
+              onPress: () => handleSubmit(),
+            },
+          }}
+        >
+          <Tab.Navigator
+            tabBarOptions={{
+              style: {
+                backgroundColor: "#333",
+              },
+              activeTintColor: "#fff",
+              inactiveTintColor: "#666",
+            }}
+          >
+            <Tab.Screen
+              name="Informações"
+              component={OrderFormInfo}
+              options={{
+                tabBarIcon: ({ color, size }): ReactNode => (
+                  <MaterialIcons name="list-alt" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Produtos"
+              component={OrderFormProducts}
+              options={{
+                tabBarIcon: ({ color, size }): ReactNode => (
+                  <MaterialCommunityIcons
+                    name="clipboard-list-outline"
+                    color={color}
+                    size={size}
+                  />
+                ),
+              }}
+            />
+          </Tab.Navigator>
+          {/* <Form>
         <Formik
           initialValues={orderInitialValues}
           onSubmit={(values) => handleFormSubmit(values)}
@@ -121,53 +146,7 @@ const OrderForm: React.FC = () => {
           }) => (
             <>
               <Content title="Informações do Pedido">
-                <DateTimePicker
-                  title="Data de Entrega"
-                  value={values.deliveryDate}
-                  onDateChange={(date) => setFieldValue("deliveryDate", date)}
-                />
-                <Picker
-                  title="Cliente"
-                  selectedValue={values.client}
-                  items={clientItems}
-                  onValueChange={(itemValue) =>
-                    setFieldValue("client", itemValue)
-                  }
-                  errorMessage={
-                    touched.client && errors.client ? errors.client : ""
-                  }
-                />
-                <Picker
-                  title="Forma de Pagamento"
-                  items={paymentTypeItems}
-                  selectedValue={values.paymentType}
-                  onValueChange={(itemValue) => {
-                    setSelectedTypeGUID(
-                      paymentConditions.find(
-                        (condition) => `${condition.id}` === itemValue
-                      )?.guid ?? paymentConditions[0].guid
-                    );
-                    setFieldValue("paymentType", itemValue);
-                  }}
-                  errorMessage={
-                    touched.paymentType && errors.paymentType
-                      ? errors.paymentType
-                      : ""
-                  }
-                />
-                <Picker
-                  title="Condição de Pagamento"
-                  items={conditionItems}
-                  selectedValue={values.paymentCondition}
-                  onValueChange={(itemValue) => {
-                    setFieldValue("paymentCondition", itemValue);
-                  }}
-                  errorMessage={
-                    touched.paymentCondition && errors.paymentCondition
-                      ? errors.paymentCondition
-                      : ""
-                  }
-                />
+                
               </Content>
               <Content
                 fill
@@ -217,8 +196,10 @@ const OrderForm: React.FC = () => {
             </>
           )}
         </Formik>
-      </Form>
-    </Container>
+      </Form> */}
+        </Container>
+      )}
+    </Formik>
   );
 };
 

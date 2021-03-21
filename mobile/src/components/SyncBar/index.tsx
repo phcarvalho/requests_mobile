@@ -15,10 +15,11 @@ import syncTheme from "./theme";
 const SyncBar: React.FC = () => {
   const dispatch = useDispatch();
 
+  const { user } = useSelector((state: RootState) => state.auth);
   const { lastSync, status } = useSelector((state: RootState) => state.sync);
 
   const handleSync = () => {
-    dispatch(syncData());
+    dispatch(syncData(user.CodigoDoRepresentante));
   };
 
   return (

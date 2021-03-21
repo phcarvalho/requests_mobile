@@ -12,6 +12,79 @@ import { OrderAPIResponse } from "../../../types/orders";
 
 // import { Container } from './styles';
 
+const ordersTest: OrderAPIResponse[] = [
+  {
+    Pedido: "Pedido 123",
+    Cliente: "Cliente Teste",
+    CondicaoDePagamento: "Condição 1",
+    DataDeCriacao: "12/10/12",
+    DataDeEntrega: "12/10/12",
+    FormaDePagamento: "Forma teste",
+    ItensPedidos: [
+      {
+        Produto: "Product 1",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 2",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 3",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 4",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 5",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 6",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 7",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 2",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 8",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+      {
+        Produto: "Product 9",
+        PrecoUnitario: "10",
+        Quantidade: "10",
+        ValorTotal: "100",
+      },
+    ],
+  },
+];
+
 const OrderList: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -42,7 +115,8 @@ const OrderList: React.FC = () => {
     >
       <FlatList
         keyExtractor={(item) => item.Pedido}
-        data={orders}
+        // data={orders}
+        data={ordersTest}
         onRefresh={() => dispatch(fetchOrders())}
         refreshing={loading}
         renderItem={({ item, index }) => (

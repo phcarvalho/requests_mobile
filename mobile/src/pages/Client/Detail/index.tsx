@@ -29,20 +29,9 @@ const ClientDetail: React.FC = () => {
   }, []);
 
   if (!currentClient) {
-    return (
-      <Container
-        header={{
-          title: "Detalhes do cliente",
-          rightComponent: {
-            icon: "close",
-            onPress: () => navigation.goBack(),
-          },
-        }}
-        verticalCenter
-      >
-        <ActivityIndicator size="small" color="#666" />
-      </Container>
-    );
+    navigation.goBack();
+
+    return null;
   }
 
   return (

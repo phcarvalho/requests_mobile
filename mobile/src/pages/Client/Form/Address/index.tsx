@@ -67,8 +67,8 @@ const ClientFormAddress: React.FC = () => {
               title="Estado"
               selectedValue={values.state}
               onValueChange={async (itemValue) => {
-                const city = await getCityOptions(itemValue);
                 setFieldValue("state", itemValue);
+                const city = await getCityOptions(itemValue);
                 setFieldValue("city", city);
               }}
               items={stateOptions}

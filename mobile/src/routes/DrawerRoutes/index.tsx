@@ -39,12 +39,12 @@ const routeOptions: RouteAttributes[] = [
     materialIconName: "person",
     component: Clients,
   },
-  // {
-  //   name: "Orders",
-  //   title: "Pedidos",
-  //   materialIconName: "receipt",
-  //   component: Orders,
-  // },
+  {
+    name: "Orders",
+    title: "Pedidos",
+    materialIconName: "receipt",
+    component: Orders,
+  },
   {
     name: "Products",
     title: "Produtos",

@@ -14,3 +14,26 @@ export interface OrderAPIResponseItems {
   PrecoUnitario: string;
   ValorTotal: string;
 }
+
+export interface OrderAPICreation {
+  DataDeCriacao: string;
+  DataDeEntrega: string;
+  Cliente: string;
+  FormaDePagamento: string;
+  CondicaoDePagamento: string;
+  ItensPedidos: OrderAPIResponseItems[];
+}
+
+export interface PaymentConditionAPIResponse {
+  Codigo: string;
+  Nome: string;
+  QtdeParcelas: string;
+  Prazo: string;
+  Acrescimo: string;
+  Desconto: string;
+}
+
+export interface PaymentTypeAPIResponse {
+  Codigo: string;
+  Nome: string;
+}

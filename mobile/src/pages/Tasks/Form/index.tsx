@@ -75,7 +75,7 @@ const TaskForm: React.FC = () => {
   const navigation = useNavigation();
 
   const handleFormSubmit = (values: TaskValues) => {
-    console.log(values);
+    // console.log(values);
   };
 
   return (
