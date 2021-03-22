@@ -4,12 +4,15 @@ import { AppThunk } from "../..";
 
 import { ClientAPIResponse } from "../../../types/clients";
 
-import { getClients } from "../../../services/client";
+import { createClient, getClients } from "../../../services/client";
 
+export interface ClientInterface extends ClientAPIResponse {
+  isNew?: boolean;
+  Representante?: string;
+}
 interface ClientState {
-  currentClient: ClientAPIResponse | null;
-  clients: ClientAPIResponse[];
-  newClients: ClientAPIResponse[];
+  currentClient: ClientInterface | null;
+  clients: ClientInterface[];
   loading: boolean;
   error: string;
 }
@@ -17,7 +20,6 @@ interface ClientState {
 const initialState: ClientState = {
   currentClient: null,
   clients: [],
-  newClients: [],
   loading: false,
   error: "",
 };
@@ -30,18 +32,26 @@ const clientSlice = createSlice({
       state.loading = true;
       state.error = "";
     },
-    getClientsSuccess: (state, action: PayloadAction<ClientAPIResponse[]>) => {
+    getClientsSuccess: (state, action: PayloadAction<ClientInterface[]>) => {
       state.loading = false;
-      state.clients = action.payload;
+
+      const newClients: ClientInterface[] = state.clients.filter(
+        (client) => client.isNew
+      );
+
+      state.clients = [...newClients, ...action.payload];
     },
     getClientsFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },
-    addNewClient: (state, action: PayloadAction<ClientAPIResponse>) => {
-      state.newClients.push(action.payload);
+    addNewClient: (state, action: PayloadAction<ClientInterface>) => {
+      state.clients = [...state.clients, action.payload];
     },
-    setCurrentClient: (state, action: PayloadAction<ClientAPIResponse>) => {
+    clearNewClients: (state) => {
+      state.clients = state.clients.filter((client) => !client.isNew);
+    },
+    setCurrentClient: (state, action: PayloadAction<ClientInterface>) => {
       state.currentClient = action.payload;
     },
     resetCurrentClient: (state) => {
@@ -58,6 +68,7 @@ const {
   getClientsSuccess,
   getClientsFailed,
   addNewClient,
+  clearNewClients,
   setCurrentClient,
   resetCurrentClient,
   resetClient,
@@ -70,17 +81,40 @@ const fetchClients = (userCode: string): AppThunk => async (dispatch) => {
     const clients = await getClients({ codigoRepresentante: userCode });
 
     dispatch(getClientsSuccess(clients));
-
-    return true;
   } catch (error) {
     dispatch(getClientsFailed(error.message));
 
-    return true;
+    throw Error("Error while fetching clients");
   }
+
+  return true;
+};
+
+const createClients = (): AppThunk => async (dispatch, getState) => {
+  const {
+    client: { clients },
+  } = getState();
+
+  try {
+    await Promise.all(
+      clients
+        .filter((client) => client.isNew)
+        .map(async (client) => {
+          await createClient(client);
+        })
+    );
+
+    dispatch(clearNewClients());
+  } catch (error) {
+    throw Error("Error while creating new clients");
+  }
+
+  return true;
 };
 
 export {
   fetchClients,
+  createClients,
   addNewClient,
   setCurrentClient,
   resetCurrentClient,

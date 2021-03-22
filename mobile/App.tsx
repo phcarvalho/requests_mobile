@@ -1,5 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
+import { Provider as PaperProvider } from "react-native-paper";
 import { ThemeProvider } from "react-native-elements";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -13,7 +14,9 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <Main />
+          <PaperProvider>
+            <Main />
+          </PaperProvider>
         </Provider>
       </ThemeProvider>
     </SafeAreaProvider>

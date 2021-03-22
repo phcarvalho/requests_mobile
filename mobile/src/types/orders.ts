@@ -5,35 +5,30 @@ export interface OrderAPIResponse {
   Cliente: string;
   FormaDePagamento: string;
   CondicaoDePagamento: string;
-  ItensPedidos: OrderAPIResponseItems[];
+  ItensPedidos: OrderAPIResponseItem[];
 }
 
-export interface OrderAPIResponseItems {
+export interface OrderAPIResponseItem {
   Produto: string;
   Quantidade: string;
   PrecoUnitario: string;
   ValorTotal: string;
 }
 
+export interface OrderAPIResponseParams {
+  codigoRepresentante?: string;
+  mostraItem?: boolean;
+  numeroPedido?: string;
+}
+
+export interface OrderAPICreationItem extends OrderAPIResponseItem {}
+
 export interface OrderAPICreation {
-  DataDeCriacao: string;
-  DataDeEntrega: string;
   Cliente: string;
+  DataDeEntrega: string;
+  DataDeCriacao: string;
   FormaDePagamento: string;
   CondicaoDePagamento: string;
-  ItensPedidos: OrderAPIResponseItems[];
-}
-
-export interface PaymentConditionAPIResponse {
-  Codigo: string;
-  Nome: string;
-  QtdeParcelas: string;
-  Prazo: string;
-  Acrescimo: string;
-  Desconto: string;
-}
-
-export interface PaymentTypeAPIResponse {
-  Codigo: string;
-  Nome: string;
+  Representante: string;
+  ItensPedidos: OrderAPICreationItem[];
 }

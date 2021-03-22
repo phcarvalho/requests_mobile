@@ -32,7 +32,7 @@ const OrderFormInfo: React.FC = () => {
 
   const { clients } = useSelector((state: RootState) => state.client);
   const { paymConditions, paymTypes } = useSelector(
-    (state: RootState) => state.order
+    (state: RootState) => state.other
   );
 
   useEffect(() => {

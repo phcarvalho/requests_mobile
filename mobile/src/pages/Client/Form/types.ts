@@ -19,6 +19,7 @@ export interface ClientValues {
   address: string;
   address2: string;
   priceList: string;
+  openDate: Date;
 }
 
 export const clientTypes: PickerItem[] = [

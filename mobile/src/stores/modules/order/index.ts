@@ -1,39 +1,34 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../..";
-import { paymentConditions } from "../../../pages/Orders/infos";
-import api from "../../../services/api";
-import {
-  fetchPaymentConditions,
-  fetchPaymentTypes,
-} from "../../../services/orders";
-import {
-  OrderAPIResponse,
-  PaymentConditionAPIResponse,
-  PaymentTypeAPIResponse,
-} from "../../../types/orders";
 
-interface CurrentOrderInterface extends OrderAPIResponse {
+import api from "../../../services/api";
+import { createOrder, getOrders } from "../../../services/orders";
+
+import { OrderAPIResponse } from "../../../types/orders";
+
+import { formatPrice } from "../../../utils/price";
+
+export interface OrderInterface extends OrderAPIResponse {
+  isNew?: boolean;
+  Representante?: string;
+}
+
+interface CurrentOrderInterface extends OrderInterface {
   totalAmount: string;
 }
 
 interface OrderState {
   currentOrder: CurrentOrderInterface | null;
-  orders: OrderAPIResponse[];
-  newOrders: OrderAPIResponse[];
+  orders: OrderInterface[];
   loading: boolean;
   error: string;
-  paymConditions: PaymentConditionAPIResponse[];
-  paymTypes: PaymentTypeAPIResponse[];
 }
 
 const initialState: OrderState = {
   currentOrder: null,
   orders: [],
-  newOrders: [],
   loading: false,
   error: "",
-  paymConditions: [],
-  paymTypes: [],
 };
 
 const orderSlice = createSlice({
@@ -45,21 +40,23 @@ const orderSlice = createSlice({
       state.error = "";
     },
     getOrdersSuccess: (state, action: PayloadAction<OrderAPIResponse[]>) => {
-      state.orders = action.payload;
       state.loading = false;
+
+      const newOrders: OrderInterface[] = state.orders.filter(
+        (client) => client.isNew
+      );
+
+      state.orders = [...newOrders, ...action.payload];
     },
     getOrdersFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.loading = false;
     },
-    setPaymConditions: (
-      state,
-      action: PayloadAction<PaymentConditionAPIResponse[]>
-    ) => {
-      state.paymConditions = action.payload;
+    addNewOrder: (state, action: PayloadAction<OrderInterface>) => {
+      state.orders = [...state.orders, action.payload];
     },
-    setPaymTypes: (state, action: PayloadAction<PaymentTypeAPIResponse[]>) => {
-      state.paymTypes = action.payload;
+    clearNewOrders: (state) => {
+      state.orders = state.orders.filter((client) => !client.isNew);
     },
     setCurrentOrder: (state, action: PayloadAction<OrderAPIResponse>) => {
       const order = action.payload;
@@ -72,7 +69,7 @@ const orderSlice = createSlice({
 
       state.currentOrder = {
         ...order,
-        totalAmount: `R$ ${totalAmount.toFixed(2).replace(".", ",")}`,
+        totalAmount: formatPrice(totalAmount),
       };
     },
     resetCurrentOrder: (state) => {
@@ -88,9 +85,9 @@ const {
   getOrdersStart,
   getOrdersSuccess,
   getOrdersFailed,
+  addNewOrder,
+  clearNewOrders,
   setCurrentOrder,
-  setPaymConditions,
-  setPaymTypes,
   resetCurrentOrder,
   resetOrder,
 } = orderSlice.actions;
@@ -99,22 +96,50 @@ const fetchOrders = (userCode: string): AppThunk => async (dispatch) => {
   dispatch(getOrdersStart());
 
   try {
-    const { data } = await api.get<OrderAPIResponse[]>("/Pedidos", {
-      params: { CodigoRepresentante: userCode },
+    const orders = await getOrders({
+      codigoRepresentante: userCode,
+      mostraItem: true,
     });
 
-    const paymTypes = await fetchPaymentTypes();
-    const paymConditions = await fetchPaymentConditions();
-
-    dispatch(setPaymTypes(paymTypes));
-    dispatch(setPaymConditions(paymConditions));
-
-    dispatch(getOrdersSuccess(data));
+    dispatch(getOrdersSuccess(orders));
   } catch (error) {
     dispatch(getOrdersFailed(error.message));
+
+    throw Error("Error while fetching orders");
   }
+
+  return true;
 };
 
-export { fetchOrders, setCurrentOrder, resetCurrentOrder, resetOrder };
+const createOrders = (): AppThunk => async (dispatch, getState) => {
+  const {
+    order: { orders },
+  } = getState();
+
+  try {
+    await Promise.all(
+      orders
+        .filter((order) => order.isNew)
+        .map(async (order) => {
+          await createOrder(order);
+        })
+    );
+
+    dispatch(clearNewOrders());
+  } catch (error) {
+    throw Error("Error while creating new orders");
+  }
+
+  return true;
+};
+
+export {
+  fetchOrders,
+  createOrders,
+  addNewOrder,
+  setCurrentOrder,
+  resetCurrentOrder,
+  resetOrder,
+};
 
 export default orderSlice.reducer;

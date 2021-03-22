@@ -1,30 +1,33 @@
+import { OrderInterface } from "../stores/modules/order";
 import {
+  OrderAPICreation,
   OrderAPIResponse,
-  PaymentConditionAPIResponse,
-  PaymentTypeAPIResponse,
+  OrderAPIResponseParams,
 } from "../types/orders";
 import api from "./api";
 
-// export const fetchOrders = async (): Promise<OrderAPIResponse[]> => {
-//   const { data } = await api.get<OrderAPIResponse[]>("/Pedidos");
-
-//   return data;
-// };
-
-export const fetchPaymentTypes = async (): Promise<
-  PaymentTypeAPIResponse[]
-> => {
-  const { data } = await api.get<PaymentTypeAPIResponse[]>("/FormaPagamento");
+export const getOrders = async (
+  params?: OrderAPIResponseParams
+): Promise<OrderAPIResponse[]> => {
+  const { data } = await api.get<OrderAPIResponse[]>("/Pedidos", {
+    params: params,
+  });
 
   return data;
 };
 
-export const fetchPaymentConditions = async (): Promise<
-  PaymentConditionAPIResponse[]
-> => {
-  const { data } = await api.get<PaymentConditionAPIResponse[]>(
-    "/CondicaoPagamento"
-  );
+export const createOrder = async (order: OrderInterface) => {
+  const body: OrderAPICreation = {
+    Cliente: order.Cliente,
+    CondicaoDePagamento: order.CondicaoDePagamento,
+    DataDeEntrega: order.DataDeEntrega,
+    DataDeCriacao: order.DataDeCriacao,
+    FormaDePagamento: order.FormaDePagamento,
+    ItensPedidos: order.ItensPedidos,
+    Representante: order.Representante ?? "",
+  };
 
-  return data;
+  console.log(body);
+
+  const { data } = await api.post("/Pedidos", body);
 };

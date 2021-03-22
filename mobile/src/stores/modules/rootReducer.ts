@@ -4,6 +4,7 @@ import authReducer from "./auth";
 import syncReducer from "./sync";
 import clientReducer from "./client";
 import orderReducer from "./order";
+import otherReducer from "./other";
 import productReducer from "./product";
 
 export const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ export const rootReducer = combineReducers({
   sync: syncReducer,
   client: clientReducer,
   order: orderReducer,
+  other: otherReducer,
   product: productReducer,
 });
 

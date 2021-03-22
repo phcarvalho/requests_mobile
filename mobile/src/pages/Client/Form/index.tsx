@@ -2,20 +2,29 @@ import React, { ReactNode } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import { Container } from "../../../components/Common";
-
 import { clientTypes, ClientValues } from "./types";
+
+import { createClient } from "../../../services/client";
+
+import {
+  addNewClient,
+  ClientInterface,
+  fetchClients,
+} from "../../../stores/modules/client";
+import { RootState } from "../../../stores/modules/rootReducer";
+
+import { Container, FormikSnackBar } from "../../../components/Common";
+
 import { states } from "../../../types/address";
+import { ClientType } from "../../../types/clients";
 
 import ClientFormInfo from "./Info";
 import ClientFormContact from "./Contact";
 import ClientFormAddress from "./Address";
-import { ClientAPICreation, ClientType } from "../../../types/clients";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../stores/modules/rootReducer";
 
 const clientInitialValues: ClientValues = {
   clientType: clientTypes[0].value,
@@ -36,6 +45,7 @@ const clientInitialValues: ClientValues = {
   address: "",
   address2: "",
   priceList: "",
+  openDate: new Date(),
 };
 
 const clientSchema = yup.object().shape({
@@ -44,33 +54,35 @@ const clientSchema = yup.object().shape({
     .min(2, "Nome muito pequeno")
     .required("* Campo obrigatório"),
   fantasyName: yup.string(),
-  cnpjCPF: yup.string(),
-  ieRG: yup.string(),
-  phone: yup.string(),
+  cnpjCPF: yup.string().required("* Campo obrigatório"),
+  ieRG: yup.string().required("* Campo obrigatório"),
+  phone: yup.string().required("* Campo obrigatório"),
   phone2: yup.string(),
-  cellphone: yup.string(),
+  cellphone: yup.string().required("* Campo obrigatório"),
   email: yup.string().email("Email inválido").required("* Campo obrigatório"),
   email2: yup.string().email("Email inválido"),
-  city: yup.string(),
-  state: yup.string(),
-  region: yup.string(),
-  district: yup.string(),
-  zipcode: yup.string(),
-  address: yup.string(),
+  city: yup.string().required("* Campo obrigatório"),
+  state: yup.string().required("* Campo obrigatório"),
+  region: yup.string().required("* Campo obrigatório"),
+  district: yup.string().required("* Campo obrigatório"),
+  zipcode: yup.string().required("* Campo obrigatório"),
+  address: yup.string().required("* Campo obrigatório"),
   address2: yup.string(),
-  clientType: yup.string(),
-  priceList: yup.string(),
+  clientType: yup.string().required("* Campo obrigatório"),
+  priceList: yup.string().required("* Campo obrigatório"),
+  openDate: yup.date().required("* Campo obrigatório"),
 });
 
 const Tab = createBottomTabNavigator();
 
 const ClientForm: React.FC = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const { user } = useSelector((state: RootState) => state.auth);
 
-  const handleSubmit = (values: ClientValues) => {
-    const body: ClientAPICreation = {
+  const handleSubmit = async (values: ClientValues) => {
+    const client: ClientInterface = {
       TipoDeCliente: values.clientType as ClientType,
       RazaoSocial: values.name,
       NomeFantasia: values.fantasyName,
@@ -90,7 +102,20 @@ const ClientForm: React.FC = () => {
       Email: values.email,
       Email2: values.email2,
       Representante: user.CodigoDoRepresentante,
+      isNew: true,
+      CodigoDoCliente: "Novo Cliente",
+      DataDeAbertura: new Date().toLocaleString(),
     };
+
+    try {
+      await createClient(client);
+
+      dispatch(fetchClients(user?.CodigoDoRepresentante ?? ""));
+    } catch (error) {
+      dispatch(addNewClient(client));
+    }
+
+    navigation.goBack();
   };
 
   return (
@@ -113,6 +138,7 @@ const ClientForm: React.FC = () => {
             },
           }}
         >
+          <FormikSnackBar message="O cliente não pode ser criado: Verifique as informações" />
           <Tab.Navigator
             tabBarOptions={{
               style: {

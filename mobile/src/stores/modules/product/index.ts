@@ -45,19 +45,19 @@ const {
   getProductsFailed,
 } = productSlice.actions;
 
-const fetchProducts = (): AppThunk => async (dispatch) => {
+const fetchProducts = (userCode: string): AppThunk => async (dispatch) => {
   dispatch(getProductsStart());
 
   try {
-    const products = await getProducts();
+    const products = await getProducts({
+      codigoRepresentante: userCode,
+    });
 
     dispatch(getProductsSuccess(products));
-
-    return true;
   } catch (error) {
     dispatch(getProductsFailed(error.message));
 
-    return false;
+    throw Error("Error while fetching products");
   }
 };
 

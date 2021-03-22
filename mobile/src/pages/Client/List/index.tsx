@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar, ListItem } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,12 +44,12 @@ const ClientList: React.FC = () => {
       }}
     >
       <FlatList
-        keyExtractor={(item) => item.CodigoDoCliente}
+        keyExtractor={(item, index) => `${item.CodigoDoCliente}-${index}`}
         data={clients}
         onRefresh={() => dispatch(fetchClients(user.CodigoDoRepresentante))}
         refreshing={loading}
         renderItem={({ item, index }) => (
-          <ListItem key={index} bottomDivider onPress={() => handleClick(item)}>
+          <ListItem bottomDivider onPress={() => handleClick(item)}>
             <Avatar
               source={require("../../../../assets/flat-icons/contact-book2.png")}
             />

@@ -5,7 +5,11 @@ import { Text, ThemeProvider } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { RootState } from "../../stores/modules/rootReducer";
-import { syncData, SyncStatus } from "../../stores/modules/sync";
+import {
+  syncCreate,
+  syncFetchData,
+  SyncStatus,
+} from "../../stores/modules/sync";
 
 import { RowView } from "../Common";
 import { SyncButton, SyncContainer, SyncStatusIcon } from "./styles";
@@ -18,8 +22,10 @@ const SyncBar: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const { lastSync, status } = useSelector((state: RootState) => state.sync);
 
-  const handleSync = () => {
-    dispatch(syncData(user.CodigoDoRepresentante));
+  const handleSync = async () => {
+    await Promise.all([dispatch(syncFetchData(user.CodigoDoRepresentante))]);
+
+    await Promise.all([dispatch(syncCreate(user.CodigoDoRepresentante))]);
   };
 
   return (

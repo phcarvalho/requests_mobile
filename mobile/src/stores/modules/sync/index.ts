@@ -2,8 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 
 import { AppThunk } from "../..";
-import { fetchClients } from "../client";
-import { fetchOrders } from "../order";
+import { createClients, fetchClients } from "../client";
+import { createOrders, fetchOrders } from "../order";
+import { fetchOtherInfo } from "../other";
 import { fetchProducts } from "../product";
 
 export enum SyncStatus {
@@ -44,11 +45,9 @@ const syncSlice = createSlice({
         .setLocale("pt-BR")
         .toFormat("dd/LL/yyyy 'às' HH:mm");
     },
-    syncFailed: (state, action: PayloadAction<{ error: string }>) => {
-      const { error } = action.payload;
-
+    syncFailed: (state, action: PayloadAction<string>) => {
       state.status = SyncStatus.NotSynced;
-      state.error = error;
+      state.error = action.payload;
     },
     resetSync(state) {
       state = initialState;
@@ -58,22 +57,44 @@ const syncSlice = createSlice({
 
 const { syncStart, syncSuccess, syncFailed, resetSync } = syncSlice.actions;
 
-const syncData = (userCode: string): AppThunk => async (dispatch) => {
+const syncCreate = (userCode: string): AppThunk => async (dispatch) => {
   dispatch(syncStart());
 
   try {
     await Promise.all([
-      dispatch(fetchProducts()),
+      dispatch(createClients()),
+      dispatch(createOrders()),
       dispatch(fetchClients(userCode)),
       dispatch(fetchOrders(userCode)),
     ]);
 
     dispatch(syncSuccess());
   } catch (error) {
+    console.log(error);
+
     dispatch(syncFailed(error.message));
   }
 };
 
-export { syncData, resetSync };
+const syncFetchData = (userCode: string): AppThunk => async (dispatch) => {
+  dispatch(syncStart());
+
+  try {
+    await Promise.all([
+      dispatch(fetchClients(userCode)),
+      dispatch(fetchOtherInfo()),
+      dispatch(fetchProducts(userCode)),
+      dispatch(fetchOrders(userCode)),
+    ]);
+
+    dispatch(syncSuccess());
+  } catch (error) {
+    console.log(error);
+
+    dispatch(syncFailed(error.message));
+  }
+};
+
+export { syncFetchData, syncCreate, resetSync };
 
 export default syncSlice.reducer;

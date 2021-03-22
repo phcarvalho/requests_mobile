@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { RootState } from "./stores/modules/rootReducer";
-import { syncData } from "./stores/modules/sync";
+import { syncFetchData } from "./stores/modules/sync";
 
 import DrawerRoutes from "./routes/DrawerRoutes";
 import Login from "./pages/Login";
@@ -14,7 +14,7 @@ const Main: React.FC = () => {
 
   useEffect(() => {
     if (isSigned) {
-      dispatch(syncData(user.CodigoDoRepresentante));
+      dispatch(syncFetchData(user.CodigoDoRepresentante));
     }
   }, [isSigned]);
 

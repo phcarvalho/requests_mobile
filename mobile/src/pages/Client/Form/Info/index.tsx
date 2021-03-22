@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormikContext } from "formik";
 import { Input } from "react-native-elements";
 
 import {
   Container,
+  DateTimePicker,
   Form,
   FormContent,
   Picker,
+  PickerItem,
 } from "../../../../components/Common";
 import MaskedInput from "../../../../components/MaskedInput";
 
 import { clientTypes, ClientValues } from "../types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../stores/modules/rootReducer";
 
 const ClientFormInfo: React.FC = () => {
+  const [priceListOptions, setPriceListOptions] = useState<PickerItem[]>([]);
+
+  const { priceLists } = useSelector((state: RootState) => state.other);
+
   const {
     values,
     setFieldValue,
@@ -20,6 +28,17 @@ const ClientFormInfo: React.FC = () => {
     touched,
     errors,
   } = useFormikContext<ClientValues>();
+
+  useEffect(() => {
+    const options: PickerItem[] = priceLists.map((pList) => ({
+      label: pList.Codigo,
+      value: pList.Codigo,
+    }));
+
+    setPriceListOptions(options);
+
+    setFieldValue("priceList", options[0].value ?? "");
+  }, [priceLists]);
 
   return (
     <Container scroll>
@@ -79,6 +98,11 @@ const ClientFormInfo: React.FC = () => {
                 onChangeText={handleChange("ieRG")}
                 errorMessage={touched.ieRG && errors.ieRG ? errors.ieRG : ""}
               />
+              <DateTimePicker
+                title="Data de Abertura"
+                value={values.openDate}
+                onDateChange={(date) => setFieldValue("openDate", date)}
+              />
             </>
           ) : (
             <>
@@ -101,11 +125,13 @@ const ClientFormInfo: React.FC = () => {
               />
             </>
           )}
-          <Input
-            label="Lista de Preço"
-            placeholder="Lista de Preço"
-            value={values.priceList}
-            onChangeText={handleChange("priceList")}
+          <Picker
+            title="Lista de Preço"
+            items={priceListOptions}
+            selectedValue={values.priceList}
+            onValueChange={(itemValue) => {
+              setFieldValue("priceList", itemValue);
+            }}
             errorMessage={
               touched.priceList && errors.priceList ? errors.priceList : ""
             }

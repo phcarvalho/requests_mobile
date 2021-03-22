@@ -1,3 +1,4 @@
+import { ClientInterface } from "../stores/modules/client";
 import {
   ClientAPICreation,
   ClientAPIResponse,
@@ -13,7 +14,30 @@ const getClients = async (
   return data;
 };
 
-const createClient = async (body: ClientAPICreation) => {
+const createClient = async (client: ClientInterface) => {
+  const body: ClientAPICreation = {
+    Bairro: client.Bairro,
+    CEP: client.CEP,
+    Celular: client.Celular,
+    Cidade: client.Cidade,
+    CnpjCpf: client.CnpjCpf,
+    Complemento: client.Complemento,
+    Email: client.Email,
+    Email2: client.Email2,
+    Endereco: client.Endereco,
+    Estado: client.Estado,
+    IeRG: client.IeRG,
+    ListaDePreco: client.ListaDePreco,
+    NomeFantasia: client.NomeFantasia,
+    OutroTelefone: client.OutroTelefone,
+    RazaoSocial: client.RazaoSocial,
+    Regiao: client.Regiao,
+    Representante: client.Representante ?? "",
+    Telefone: client.Telefone,
+    TipoDeCliente: client.TipoDeCliente,
+    DataDeAbertura: client.DataDeAbertura,
+  };
+
   const { data } = await api.post("/cliente", body);
 };
 

@@ -46,4 +46,5 @@ export interface ClientAPICreation {
   Email: string;
   Email2: string;
   Representante: string;
+  DataDeAbertura: string;
 }

@@ -1,88 +1,99 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { Formik } from "formik";
-import { Avatar, Button, Icon, ListItem } from "react-native-elements";
+import React, { ReactNode } from "react";
 import { useNavigation } from "@react-navigation/native";
-import * as yup from "yup";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { Formik } from "formik";
+import * as yup from "yup";
+
+import { Container, FormikSnackBar } from "../../../components/Common";
 
 import {
-  Container,
-  DateTimePicker,
-  Picker,
-  PickerItem,
-  Form,
-  FormContent,
-  Content,
-} from "../../../components/Common";
-
-import { FlatList } from "react-native";
-import { useSelector } from "react-redux";
+  addNewOrder,
+  fetchOrders,
+  OrderInterface,
+} from "../../../stores/modules/order";
 import { RootState } from "../../../stores/modules/rootReducer";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import { formatPrice } from "../../../utils/price";
+import { OrderValues } from "./types";
+
+import { createOrder } from "../../../services/orders";
+
 import OrderFormInfo from "./Info";
 import OrderFormProducts from "./Products";
-import { OrderValues } from "./types";
 
 const orderInitialValues: OrderValues = {
   deliveryDate: new Date(),
+  creationDate: new Date(),
   paymentType: "",
   paymentCondition: "",
   client: "",
   products: [],
 };
 
-// const orderSchema = yup.object().shape({
-//   date: yup.date().required("* Campo obrigatório"),
-//   paymentType: yup.string().required("* Campo obrigatório"),
-//   paymentCondition: yup.string().required("* Campo obrigatório"),
-//   client: yup.string().required("* Campo obrigatório"),
-// });
+const productSchema = yup.object().shape({
+  id: yup.string().required(),
+  name: yup.string(),
+  price: yup.number().required(),
+  qty: yup.number().required(),
+});
+
+const orderSchema = yup.object().shape({
+  deliveryDate: yup.date().required("* Campo obrigatório"),
+  creationDate: yup.date(),
+  paymentType: yup.string().required("* Campo obrigatório"),
+  paymentCondition: yup.string().required("* Campo obrigatório"),
+  client: yup.string().required("* Campo obrigatório"),
+  products: yup
+    .array()
+    .of(productSchema)
+    .min(1, "Você precisa adicionar pelo menos um produto")
+    .required(),
+});
 
 const Tab = createBottomTabNavigator();
 
 const OrderForm: React.FC = () => {
-  // const [conditionItems, setConditionItems] = useState<PickerItem[]>([]);
-  // const [clientItems, setClientItems] = useState<PickerItem[]>([]);
-  // const [products, setProducts] = useState<OrderProduct[]>([]);
-
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-  // const { clients } = useSelector((state: RootState) => state.client);
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  // const handleFormSubmit = (values: OrderValues) => {
-  //   // console.log(values);
-  // };
+  const handleSubmit = async (values: OrderValues) => {
+    const order: OrderInterface = {
+      Cliente: values.client,
+      CondicaoDePagamento: values.paymentCondition,
+      FormaDePagamento: values.paymentType,
+      DataDeCriacao: values.creationDate.toLocaleString(),
+      DataDeEntrega: values.deliveryDate.toLocaleString(),
+      ItensPedidos: values.products.map((product) => ({
+        Produto: product.id,
+        PrecoUnitario: formatPrice(product.price),
+        Quantidade: product.qty.toFixed(2),
+        ValorTotal: formatPrice(product.price * product.qty),
+      })),
+      isNew: true,
+      Pedido: "Novo Pedido",
+      Representante: user?.CodigoDoRepresentante ?? "",
+    };
 
-  // useEffect(() => {
-  //   if (clients.length > 0) {
-  //     const newClientItems = clients.map((client) => ({
-  //       label: client.RazaoSocial,
-  //       value: client.CnpjCpf,
-  //     }));
+    try {
+      await createOrder(order);
 
-  //     setClientItems(newClientItems);
-  //   }
-  // }, [clients]);
+      dispatch(fetchOrders(user?.CodigoDoRepresentante ?? ""));
+    } catch (error) {
+      dispatch(addNewOrder(order));
+    }
 
-  // useEffect(() => {
-  //   const newPaymentConditionItems: PickerItem[] = paymentConditions
-  //     .filter((condition) => condition.guid === selectedTypeGUID)
-  //     .map((condition) => ({
-  //       label: condition.name,
-  //       value: `${condition.id}`,
-  //     }));
-
-  //   setConditionItems(newPaymentConditionItems);
-  // }, [selectedTypeGUID]);
-
-  const handleSubmit = (values: any) => {
-    console.log(values);
+    navigation.goBack();
   };
 
   return (
     <Formik
       initialValues={orderInitialValues}
       onSubmit={(values) => handleSubmit(values)}
+      validationSchema={orderSchema}
     >
       {({ handleSubmit }) => (
         <Container
@@ -98,6 +109,7 @@ const OrderForm: React.FC = () => {
             },
           }}
         >
+          <FormikSnackBar message="Seu pedido não pode ser criado: Verifique as informações" />
           <Tab.Navigator
             tabBarOptions={{
               style: {
@@ -130,73 +142,6 @@ const OrderForm: React.FC = () => {
               }}
             />
           </Tab.Navigator>
-          {/* <Form>
-        <Formik
-          initialValues={orderInitialValues}
-          onSubmit={(values) => handleFormSubmit(values)}
-          validationSchema={orderSchema}
-        >
-          {({
-            handleChange,
-            handleSubmit,
-            setFieldValue,
-            values,
-            touched,
-            errors,
-          }) => (
-            <>
-              <Content title="Informações do Pedido">
-                
-              </Content>
-              <Content
-                fill
-                title="Produtos"
-                rightComponent={
-                  <Icon
-                    name="add"
-                    onPress={() => {
-                      setProducts([
-                        ...products,
-                        {
-                          id: `${products.length}`,
-                          name: `Product Test ${products.length + 1}`,
-                          price: `R$ ${(Math.random() * 100)
-                            .toFixed(2)
-                            .replace(".", ",")}`,
-                          qty: `${Math.floor(Math.random() * 50)}`,
-                        },
-                      ]);
-                    }}
-                  />
-                }
-              >
-                {products.map((item, index) => (
-                  <ListItem key={index} bottomDivider>
-                    <Avatar
-                      source={require("../../../../assets/flat-icons/box.png")}
-                    />
-                    <ListItem.Content>
-                      <ListItem.Title>{item.name}</ListItem.Title>
-                      <ListItem.Subtitle>
-                        Price: {item.price} - Qty: {item.qty}
-                      </ListItem.Subtitle>
-                    </ListItem.Content>
-                    <Icon
-                      name="remove"
-                      onPress={() => {
-                        setProducts(
-                          products.filter((product) => product.id !== item.id)
-                        );
-                      }}
-                    />
-                  </ListItem>
-                ))}
-              </Content>
-              <Button title="Criar" onPress={() => handleSubmit()} />
-            </>
-          )}
-        </Formik>
-      </Form> */}
         </Container>
       )}
     </Formik>

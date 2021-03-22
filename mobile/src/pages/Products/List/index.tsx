@@ -25,6 +25,7 @@ const ProductList: React.FC = () => {
 
   const dispatch = useDispatch();
 
+  const { user } = useSelector((state: RootState) => state.auth);
   const { products, loading } = useSelector(
     (state: RootState) => state.product
   );
@@ -68,7 +69,9 @@ const ProductList: React.FC = () => {
         <FlatList
           keyExtractor={(item, index) => item.CodigoERP}
           data={filteredProducts}
-          onRefresh={() => dispatch(fetchProducts())}
+          onRefresh={() =>
+            dispatch(fetchProducts(user?.CodigoDoRepresentante ?? ""))
+          }
           refreshing={loading}
           renderItem={({ item, index }) => (
             <ListItem key={index} bottomDivider>

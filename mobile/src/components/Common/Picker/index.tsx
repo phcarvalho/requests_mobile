@@ -34,9 +34,9 @@ export const Picker: React.FC<PickerProps> = ({
           fontSize: 18,
         }}
       >
-        {items.map((item) => (
+        {items.map((item, index) => (
           <RNPicker.Item
-            key={item.value}
+            key={`${item.value}-${index}`}
             label={item.label}
             value={item.value}
           />

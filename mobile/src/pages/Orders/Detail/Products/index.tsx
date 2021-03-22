@@ -1,12 +1,13 @@
 import React from "react";
 import { ActivityIndicator, FlatList } from "react-native";
+import { Avatar, ListItem, Text } from "react-native-elements";
 import { useSelector } from "react-redux";
 
 import { RootState } from "../../../../stores/modules/rootReducer";
 
 import { Container, Content } from "../../../../components/Common";
 
-import { Avatar, ListItem } from "react-native-elements";
+import { QtyContainer } from "../../Form/Products/styles";
 
 const OrderDetailProducts: React.FC = () => {
   const { currentOrder } = useSelector((state: RootState) => state.order);
@@ -35,11 +36,15 @@ const OrderDetailProducts: React.FC = () => {
                   {item.Produto}
                 </ListItem.Title>
                 <ListItem.Subtitle>
-                  Preço: {item.PrecoUnitario} - Qtde:{" "}
-                  {parseFloat(item.Quantidade).toFixed(2)}
+                  Preço Unitário: {item.PrecoUnitario}
                 </ListItem.Subtitle>
                 <ListItem.Subtitle>Total: {item.ValorTotal}</ListItem.Subtitle>
               </ListItem.Content>
+              <QtyContainer>
+                <Text style={{ textAlign: "center" }}>
+                  {item.Quantidade.split(",")[0]}
+                </Text>
+              </QtyContainer>
             </ListItem>
           )}
         />
