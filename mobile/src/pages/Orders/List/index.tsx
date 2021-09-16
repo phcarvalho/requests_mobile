@@ -40,8 +40,8 @@ const OrderList: React.FC = () => {
       }}
     >
       <FlatList
-        keyExtractor={(item) => item.Pedido}
-        data={orders}
+        keyExtractor={(item, index) => `order-${index}`}
+        data={orders.filter((order) => !order.isNew)}
         onRefresh={() =>
           dispatch(fetchOrders(user.CodigoDoRepresentante ?? ""))
         }
@@ -49,12 +49,14 @@ const OrderList: React.FC = () => {
         renderItem={({ item, index }) => (
           <ListItem key={index} bottomDivider onPress={() => handleClick(item)}>
             <Avatar
-              source={require("../../../../assets/flat-icons/documents.png")}
+              source={require("../../../../assets/flat-icons/document.png")}
             />
             <ListItem.Content>
               <ListItem.Title numberOfLines={1}>{item.Cliente}</ListItem.Title>
+              <ListItem.Subtitle>{item.DataDeCriacao}</ListItem.Subtitle>
               <ListItem.Subtitle>
-                {item.Pedido} - {item.DataDeCriacao}
+                {item.Pedido} | {item.FormaDePagamento} -{" "}
+                {item.CondicaoDePagamento}
               </ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron />

@@ -5,6 +5,8 @@ export interface OrderAPIResponse {
   Cliente: string;
   FormaDePagamento: string;
   CondicaoDePagamento: string;
+  Empresa: string;
+  Moeda: string;
   ItensPedidos: OrderAPIResponseItem[];
 }
 
@@ -13,6 +15,8 @@ export interface OrderAPIResponseItem {
   Quantidade: string;
   PrecoUnitario: string;
   ValorTotal: string;
+  Desconto: string;
+  Unidade: string;
 }
 
 export interface OrderAPIResponseParams {
@@ -21,7 +25,10 @@ export interface OrderAPIResponseParams {
   numeroPedido?: string;
 }
 
-export interface OrderAPICreationItem extends OrderAPIResponseItem {}
+export interface OrderAPICreationItem extends OrderAPIResponseItem {
+  Desconto: string;
+  Unidade: string;
+}
 
 export interface OrderAPICreation {
   Cliente: string;
@@ -29,6 +36,8 @@ export interface OrderAPICreation {
   DataDeCriacao: string;
   FormaDePagamento: string;
   CondicaoDePagamento: string;
+  Empresa: string;
+  Moeda: string;
   Representante: string;
   ItensPedidos: OrderAPICreationItem[];
 }

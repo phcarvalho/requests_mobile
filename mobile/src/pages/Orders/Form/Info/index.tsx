@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useFormikContext } from "formik";
 
 import { RootState } from "../../../../stores/modules/rootReducer";
@@ -14,6 +14,7 @@ import {
 } from "../../../../components/Common";
 
 import { OrderValues } from "../types";
+import { fetchOtherInfo } from "../../../../stores/modules/other";
 
 const OrderFormInfo: React.FC = () => {
   const [paymConditionOptions, setPaymConditionOptions] = useState<
@@ -21,6 +22,8 @@ const OrderFormInfo: React.FC = () => {
   >([]);
   const [paymTypeOptions, setPaymTypeOptions] = useState<PickerItem[]>([]);
   const [clientOptions, setClientOptions] = useState<PickerItem[]>([]);
+
+  const dispatch = useDispatch();
 
   const {
     values,
@@ -36,23 +39,31 @@ const OrderFormInfo: React.FC = () => {
   );
 
   useEffect(() => {
-    const options: PickerItem[] = paymConditions.map((condition) => ({
-      label: condition.Nome,
-      value: condition.Codigo,
-    }));
+    if (paymConditions) {
+      const options: PickerItem[] = paymConditions.map((condition) => ({
+        label: condition.Nome,
+        value: condition.Codigo,
+      }));
 
-    setPaymConditionOptions(options);
-    setFieldValue("paymentCondition", options[0].value ?? "");
+      setPaymConditionOptions(options);
+      setFieldValue("paymentCondition", options[0].value ?? "");
+    } else {
+      dispatch(fetchOtherInfo());
+    }
   }, [paymConditions]);
 
   useEffect(() => {
-    const options: PickerItem[] = paymTypes.map((condition) => ({
-      label: condition.Nome,
-      value: condition.Codigo,
-    }));
+    if (paymTypes) {
+      const options: PickerItem[] = paymTypes.map((condition) => ({
+        label: condition.Nome,
+        value: condition.Codigo,
+      }));
 
-    setPaymTypeOptions(options);
-    setFieldValue("paymentType", options[0].value ?? "");
+      setPaymTypeOptions(options);
+      setFieldValue("paymentType", options[0].value ?? "");
+    } else {
+      dispatch(fetchOtherInfo());
+    }
   }, [paymTypes]);
 
   useEffect(() => {

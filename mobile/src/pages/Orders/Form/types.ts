@@ -1,8 +1,11 @@
 export interface OrderProduct {
   id: string;
   name: string;
-  price: number;
-  qty: number;
+  price: string;
+  qty: string;
+  percDiscount: string;
+  total: string;
+  unity: string;
 }
 
 export interface OrderValues {

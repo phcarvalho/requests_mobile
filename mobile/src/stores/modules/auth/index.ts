@@ -58,25 +58,28 @@ const authSlice = createSlice({
 
 const { authStart, authSuccess, authFailed, logout } = authSlice.actions;
 
-const login = (userName: string, password: string): AppThunk => async (
-  dispatch
-) => {
-  dispatch(authStart());
+const login =
+  (userName: string, password: string): AppThunk =>
+  async (dispatch) => {
+    dispatch(authStart());
 
-  try {
-    const { data } = await api.get<AuthAPIResponse>("/cadastro", {
-      params: {
-        login: userName,
-        senha: password,
-        tipoApp: 2,
-      },
-    });
+    setTimeout(function () {
+      dispatch(authFailed({ error: "Falha na autenticação" }));
+    }, 3000);
+    // try {
+    //   const { data } = await api.get<AuthAPIResponse>("/cadastro", {
+    //     params: {
+    //       login: userName,
+    //       senha: password,
+    //       tipoApp: 2,
+    //     },
+    //   });
 
-    dispatch(authSuccess(data));
-  } catch (error) {
-    dispatch(authFailed({ error: "Falha na autenticação" }));
-  }
-};
+    //   dispatch(authSuccess(data));
+    // } catch (error) {
+    //   dispatch(authFailed({ error: "Falha na autenticação" }));
+    // }
+  };
 
 export { logout, login };
 

@@ -67,8 +67,9 @@ const ClientList: React.FC = () => {
                   ).formattedValue
                 }
               </ListItem.Subtitle>
-              <ListItem.Subtitle>{item.Email}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.Telefone}</ListItem.Subtitle>
+              <ListItem.Subtitle>
+                {item.Email} - {item.Telefone}
+              </ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>

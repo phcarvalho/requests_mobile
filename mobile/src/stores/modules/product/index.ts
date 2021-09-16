@@ -59,6 +59,8 @@ const fetchProducts = (userCode: string): AppThunk => async (dispatch) => {
 
     throw Error("Error while fetching products");
   }
+
+  return true;
 };
 
 export { fetchProducts };

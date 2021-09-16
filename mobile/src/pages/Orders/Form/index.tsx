@@ -22,6 +22,7 @@ import { createOrder } from "../../../services/orders";
 
 import OrderFormInfo from "./Info";
 import OrderFormProducts from "./Products";
+import { convertToNumber } from "../../../utils/numbers";
 
 const orderInitialValues: OrderValues = {
   deliveryDate: new Date(),
@@ -35,8 +36,8 @@ const orderInitialValues: OrderValues = {
 const productSchema = yup.object().shape({
   id: yup.string().required(),
   name: yup.string(),
-  price: yup.number().required(),
-  qty: yup.number().required(),
+  price: yup.string().required(),
+  qty: yup.string().required(),
 });
 
 const orderSchema = yup.object().shape({
@@ -67,11 +68,19 @@ const OrderForm: React.FC = () => {
       FormaDePagamento: values.paymentType,
       DataDeCriacao: values.creationDate.toLocaleString(),
       DataDeEntrega: values.deliveryDate.toLocaleString(),
+      Empresa: "",
+      Moeda: "",
       ItensPedidos: values.products.map((product) => ({
         Produto: product.id,
-        PrecoUnitario: formatPrice(product.price),
-        Quantidade: product.qty.toFixed(2),
-        ValorTotal: formatPrice(product.price * product.qty),
+        PrecoUnitario: convertToNumber(product.price)
+          .toFixed(2)
+          .replace(".", ","),
+        Quantidade: convertToNumber(product.qty).toFixed(2).replace(".", ","),
+        Desconto: convertToNumber(product.percDiscount)
+          .toFixed(2)
+          .replace(".", ","),
+        ValorTotal: convertToNumber(product.total).toFixed(2).replace(".", ","),
+        Unidade: product.unity,
       })),
       isNew: true,
       Pedido: "Novo Pedido",
